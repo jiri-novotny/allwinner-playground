@@ -1,0 +1,32 @@
+#!/bin/sh
+
+CACHE=250
+
+case $1 in
+  bbc1)
+    VAR=http://bbcmedia.ic.llnwd.net/stream/bbcmedia_radio1_mf_p
+  ;;
+  bbc2)
+    VAR=http://bbcmedia.ic.llnwd.net/stream/bbcmedia_radio2_mf_p
+    CACHE=750
+  ;;
+  cro1)
+    VAR="-playlist http://api.play.cz/radio/cro1-128.mp3.m3u"
+  ;;
+  cro2)
+    VAR="-playlist http://api.play.cz/radio/cro2-128.mp3.m3u"
+  ;;
+  none)
+    VAR=none
+  ;;
+  *)
+    echo "USAGE: radio [station_name]"
+    echo "  where [station_name] is bbc1, bbc2, cro1, cro2, none"
+    exit
+  ;;
+esac
+
+killall mplayer 2> /dev/null
+if [ ! VAR == "none" ]; then
+  mplayer -ao alsa -cache ${CACHE} $VAR > /dev/null 2> /dev/null &
+fi
