@@ -1,7 +1,7 @@
 #!/bin/sh
 
-BUILD_PATH=../buildroot/output/build
-TARGET_PATH=../buildroot/output/target
+BUILD_PATH=../audio/build
+TARGET_PATH=../audio/target
 
 # store build time and info
 echo USER=`uname -n` > ${TARGET_PATH}/etc/build
