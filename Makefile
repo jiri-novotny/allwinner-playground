@@ -7,6 +7,10 @@ BUILDROOT_BRANCH=master
 # you can set buildroot static version
 BUILDROOT_RELEASE=buildroot-2016.05
 
+# project variable
+AUDIO_PATH=./audio
+KERNEL_PATH=$(AUDIO_PATH)/build/linux-4.9-rc3
+
 # you probably dont want to change buildroot source url
 BUILDROOT_GIT=git://git.buildroot.net/buildroot
 BUILDROOT_URL=https://buildroot.org/downloads/$(BUILDROOT_RELEASE).tar.gz
@@ -14,8 +18,7 @@ BUILDROOT_URL=https://buildroot.org/downloads/$(BUILDROOT_RELEASE).tar.gz
 # dont edit after this line
 SRC_PATH=./buildroot
 PATCH_PATH=./patches
-AUDIO_PATH=./audio
-KERNEL_PATH=$(AUDIO_PATH)/build/linux-4.9-rc3
+MOUNT_PATH=/mnt
 
 .PHONY: prepare audio
 
