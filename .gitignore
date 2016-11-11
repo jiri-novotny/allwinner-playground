@@ -1,1 +1,9 @@
 buildroot/
+audio/..config.tmp
+audio/.br-external.mk
+audio/build/
+audio/host/
+audio/images/
+audio/staging
+audio/target/
+audio/.config.old
