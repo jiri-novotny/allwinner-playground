@@ -166,14 +166,14 @@ index 0000000..2a78d21
 +		label = "Volume Up";
 +		linux,code = <KEY_VOLUMEUP>;
 +		channel = <0>;
-+		voltage = <191000>;
++		voltage = <398000>;
 +	};
 +
 +	button@391 {
 +		label = "Volume Down";
 +		linux,code = <KEY_VOLUMEDOWN>;
 +		channel = <0>;
-+		voltage = <391000>;
++		voltage = <800000>;
 +	};
 +
 +	button@987 {
