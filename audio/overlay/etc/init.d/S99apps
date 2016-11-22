@@ -16,6 +16,9 @@ start() {
     echo "No IP, skipping date config..."
   fi
 
+  IP=`ip a | grep eth | grep inet | cut -d "/" -f 1 | grep -o '[^ ]*$'`
+  sed "1s/.*/var ip=\"$IP\";/" /etc/websock.js > /usr/html/js/websock.js
+
   # set default state
   /usr/bin/rfmctrl 192.168.0.10 9000 N1 > /dev/null 2&>1
   amixer sset 'Power Amplifier',0 19 > /dev/null 2&>1
