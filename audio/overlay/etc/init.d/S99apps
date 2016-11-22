@@ -1,0 +1,46 @@
+#!/bin/sh
+
+start() {
+  echo "Starting apps..."
+
+  # wait for network
+  sleep 1
+  ifup eth0
+
+  # set time
+  ntpd -q -p ntp.cesnet.cz
+
+  # set default state
+  #/usr/bin/rfmctrl 192.168.0.10 9000 F1
+  amixer sset 'Power Amplifier',0 19
+  /usr/bin/radio none
+
+  # start websocket server
+  /usr/sbin/websocketserver > /dev/null 2> /dev/null &
+}
+
+stop() {
+  /usr/bin/radio none
+  killall websocketserver
+}
+
+restart() {
+  start
+}
+
+case "$1" in
+  start)
+    start
+  ;;
+  stop)
+    stop
+  ;;
+  restart|reload)
+    restart
+  ;;
+  *)
+    echo "Usage: $0 {start|restart|stop}"
+    exit 1
+esac
+
+exit $?
