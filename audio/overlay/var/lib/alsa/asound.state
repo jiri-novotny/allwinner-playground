@@ -2,7 +2,7 @@ state.sun4icodec {
 	control.1 {
 		iface MIXER
 		name 'Power Amplifier Volume'
-		value 24
+		value 19
 		comment {
 			access 'read write'
 			type INTEGER
@@ -10,7 +10,7 @@ state.sun4icodec {
 			range '0 - 63'
 			dbmin -9999999
 			dbmax 0
-			dbvalue.0 -3900
+			dbvalue.0 -4400
 		}
 	}
 	control.2 {
@@ -26,7 +26,7 @@ state.sun4icodec {
 	control.3 {
 		iface MIXER
 		name 'Right Mixer Right DAC Playback Switch'
-		value false
+		value true
 		comment {
 			access 'read write'
 			type BOOLEAN
