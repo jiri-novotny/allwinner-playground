@@ -13,7 +13,8 @@ start() {
   # set default state
   #/usr/bin/rfmctrl 192.168.0.10 9000 F1
   amixer sset 'Power Amplifier',0 19
-  /usr/bin/radio none
+  mkfifo /tmp/mplayer.fifo
+  mplayer -idle -slave -input file=/tmp/mplayer.fifo >/dev/null 2&>1 &
 
   # start websocket server
   /usr/sbin/websocketserver > /dev/null 2> /dev/null &
