@@ -31,33 +31,32 @@ index 0000000..cc1f27f
 + 
 diff --git a/package/libuwebsockets/0002-Add-my-example.patch b/package/libuwebsockets/0002-Add-my-example.patch
 new file mode 100644
-index 0000000..849d3a6
+index 0000000..f79dbaf
 --- /dev/null
 +++ b/package/libuwebsockets/0002-Add-my-example.patch
-@@ -0,0 +1,84 @@
+@@ -0,0 +1,85 @@
 +diff --git a/examples/echo.cpp b/examples/echo.cpp
-+index 73ce9d0..f99e0a4 100644
++index 73ce9d0..e9f9426 100644
 +--- a/examples/echo.cpp
 ++++ b/examples/echo.cpp
-+@@ -1,13 +1,73 @@
++@@ -1,13 +1,74 @@
 ++#include <stdio.h>
 ++#include <stdlib.h>
 ++#include <string.h>
+++#include <unistd.h>
 + #include <uWS.h>
 + 
+++char radio[16];
+++char state = 0;
+++char volume = 19;
+++
 ++void parseResp(uWS::WebSocket<uWS::SERVER> ws, char *message, uWS::OpCode opCode)
 ++{
 ++  static char resp[256];
-++  static char radio[16];
-++  static char state = 0;
-++  static char volume = 19;
 ++
 ++  if (strncmp(message, "init", 4) == 0)
 ++  {
-++    strcpy(radio, "none");
-++    strcpy(resp, "vol=19;");
-++    strcat(resp, "bedstate=OFF;");
-++    strcat(resp, "radio=none;");
+++    sprintf(resp, "vol=%d;bedstate=%s;radio=%s;", volume, state ? "ON" : "OFF", radio);
 ++  }
 ++  else if (strncmp(message, "bedstate", 8) == 0)
 ++  {
@@ -65,13 +64,13 @@ index 0000000..849d3a6
 ++    {
 ++      state = 1;
 ++      strcpy(resp, "bedstate=ON;");
-++      system("/usr/bin/rfmctrl 192.168.0.10 9000 T0");
+++      system("/usr/bin/rfmctrl 192.168.0.10 9000 T1");
 ++    }
 ++    else
 ++    {
 ++      state = 0;
 ++      strcpy(resp, "bedstate=OFF;");
-++      system("/usr/bin/rfmctrl 192.168.0.10 9000 T0");
+++      system("/usr/bin/rfmctrl 192.168.0.10 9000 T1");
 ++    }
 ++  }
 ++  else if (strncmp(message, "volup", 5) == 0)
@@ -92,7 +91,7 @@ index 0000000..849d3a6
 ++  {
 ++    strncpy(radio, message + 6, 4);
 ++    radio[5] = 0;
-++    sprintf(resp, "/usr/bin/radio %s > /dev/null 2> /dev/null &", radio);
+++    sprintf(resp, "/usr/bin/radio %s", radio);
 ++    system(resp);
 ++    sprintf(resp, "radio=%s", radio);
 ++  }
@@ -103,6 +102,8 @@ index 0000000..849d3a6
 + {
 +-    uWS::Hub h;
 ++  uWS::Hub h;
+++
+++  strcpy(radio, "none");
 + 
 +-    h.onMessage([](uWS::WebSocket<uWS::SERVER> ws, char *message, size_t length, uWS::OpCode opCode) {
 +-        ws.send(message, length, opCode);
@@ -155,7 +156,7 @@ index 0000000..507f842
 +sha256  6ebf4bd2ef74292fd9fe74af9739b224e38733b89bdefa5a81170c000b833a7d  v0.11.0.tar.gz
 diff --git a/package/libuwebsockets/libuwebsockets.mk b/package/libuwebsockets/libuwebsockets.mk
 new file mode 100644
-index 0000000..46b6231
+index 0000000..0d7dfe7
 --- /dev/null
 +++ b/package/libuwebsockets/libuwebsockets.mk
 @@ -0,0 +1,24 @@
