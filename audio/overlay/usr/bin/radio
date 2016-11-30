@@ -1,6 +1,6 @@
 #!/bin/sh
 
-SLEEP_TIME=1
+SLEEP_TIME=2
 
 case $1 in
   bbc1)
@@ -8,7 +8,7 @@ case $1 in
   ;;
   bbc2)
     VAR=http://bbcmedia.ic.llnwd.net/stream/bbcmedia_radio2_mf_p
-    SLEEP_TIME=5
+    SLEEP_TIME=6
   ;;
   cro1)
     VAR=http://icecast8.play.cz/cro1-128.mp3
@@ -28,7 +28,7 @@ esac
 
 if [ ! $VAR == "none" ]; then
   echo "stop" > /tmp/mplayer.fifo
-  sleep 0.2
+  sleep 0.5
   echo "loadfile $VAR" > /tmp/mplayer.fifo
   sleep ${SLEEP_TIME}
   amixer sset 'Left Mixer Left DAC',0 off  > /dev/null 2> /dev/null &
