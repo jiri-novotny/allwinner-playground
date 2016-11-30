@@ -59,3 +59,93 @@ index 0000000..a09e769
 +endef
 +
 +$(eval $(autotools-package))
+diff --git a/package/Config.in b/package/Config.in
+index 6d96ec6..4f37ebd 100644
+--- a/package/Config.in
++++ b/package/Config.in
+@@ -38,6 +38,7 @@ menu "Audio and video applications"
+ 	source "package/on2-8170-libs/Config.in"
+ 	source "package/opus-tools/Config.in"
+ 	source "package/pulseaudio/Config.in"
++	source "package/shairport/Config.in"
+ 	source "package/sox/Config.in"
+ 	source "package/squeezelite/Config.in"
+ 	source "package/tidsp-binaries/Config.in"
+diff --git a/package/shairport/0001-Fix-configure-script.patch b/package/shairport/0001-Fix-configure-script.patch
+new file mode 100644
+index 0000000..69210bd
+--- /dev/null
++++ b/package/shairport/0001-Fix-configure-script.patch
+@@ -0,0 +1,25 @@
++diff --git a/configure b/configure
++index 9e48d2b..7648ca0 100755
++--- a/configure
+++++ b/configure
++@@ -1,6 +1,6 @@
++ #!/bin/sh
++ 
++-[ -z "${CC}" ] && CC=gcc
+++CC="/data/allwinner-playground/audio/host/usr/bin/arm-linux-gnueabihf-gcc"
++ 
++ echo Configuring Shairport
++ 
++@@ -78,10 +78,11 @@ if [ -z "$CONFIG_AVAHI" ]; then
++     check_header  dns_sd.h      CONFIG_HAVE_DNS_SD_H
++ fi
++ 
++-
+++echo "CC=${CC}" >> config.mk
++ echo "CFLAGS+=${CFLAGS}" >> config.mk
++ echo "LDFLAGS+=${LDFLAGS}" >> config.mk
++ 
+++echo CC: ${CC}
++ echo CFLAGS: ${CFLAGS}
++ echo LDFLAGS: ${LDFLAGS}
++ 
+diff --git a/package/shairport/Config.in b/package/shairport/Config.in
+new file mode 100644
+index 0000000..a067cbe
+--- /dev/null
++++ b/package/shairport/Config.in
+@@ -0,0 +1,10 @@
++config BR2_PACKAGE_SHAIRPORT
++	bool "shairport"
++  select BR2_PACKAGE_OPENSSL
++  select BR2_PACKAGE_ALSA_LIB
++	depends on BR2_TOOLCHAIN_HAS_THREADS
++	help
++	  App for Apple AirPlay by Abrasive
++	  no longer maintained
++	  
++	  website: https://github.com/abrasive/shairport
+diff --git a/package/shairport/shairport.hash b/package/shairport/shairport.hash
+new file mode 100644
+index 0000000..5b955ab
+--- /dev/null
++++ b/package/shairport/shairport.hash
+@@ -0,0 +1,2 @@
++# Locally computed:
++sha256  1b60df6d40bab874c1220d7daecd68fcff3e47bda7c6d7f91db0a5b5c43c0c72  1.1.1.tar.gz
+diff --git a/package/shairport/shairport.mk b/package/shairport/shairport.mk
+new file mode 100644
+index 0000000..a09e769
+--- /dev/null
++++ b/package/shairport/shairport.mk
+@@ -0,0 +1,17 @@
++################################################################################
++#
++# shairport
++#
++################################################################################
++
++SHAIRPORT_VERSION = 1.1.1
++SHAIRPORT_SOURCE = $(SHAIRPORT_VERSION).tar.gz
++SHAIRPORT_SITE = https://github.com/abrasive/shairport/archive
++SHAIRPORT_DEPENDENCIES = openssl alsa-lib
++
++define SHAIRPORT_INSTALL_TARGET_CMDS
++	$(INSTALL) -D -m 0755 $(@D)/scripts/debian/init.d/shairport $(TARGET_DIR)/etc/init.d/S98shairport
++	$(INSTALL) -D -m 0755 $(@D)/shairport $(TARGET_DIR)/usr/bin
++endef
++
++$(eval $(autotools-package))
