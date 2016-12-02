@@ -33,7 +33,10 @@ prepare:
 		else \
 			git clone -b $(BUILDROOT_BRANCH) $(BUILDROOT_GIT); \
 		fi; \
-		cd $(SRC_PATH) && patch -p1 < ../$(PATCH_PATH)/br-patch/0001-Add-libuwebsocket-package.patch; \
+		# apply BR patches \
+		cd $(SRC_PATH); \
+		patch -p1 < .$(PATCH_PATH)/br-patch/0001-Add-libuwebsocket-package.patch; \
+		patch -p1 < .$(PATCH_PATH)/br-patch/0002-Add-shairport-package.patch; \
 	fi
 
 audio:
