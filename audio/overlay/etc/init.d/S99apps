@@ -20,10 +20,10 @@ start() {
   sed "1s/.*/var ip=\"$IP\";/" /etc/websock.js > /usr/html/js/websock.js
 
   # set default state
-  /usr/bin/rfmctrl 192.168.0.10 9000 N1 > /dev/null 2&>1
-  amixer sset 'Power Amplifier',0 19 > /dev/null 2&>1
+  /usr/bin/rfmctrl 192.168.0.10 9000 N1 > /dev/null 2>&1
+  amixer sset 'Power Amplifier',0 19 > /dev/null 2>&1
   mkfifo /tmp/mplayer.fifo
-  mplayer -cache 500 -idle -slave -input file=/tmp/mplayer.fifo > /dev/null 2&>1 &
+  mplayer -cache 500 -idle -slave -input file=/tmp/mplayer.fifo > /dev/null 2>&1 &
   
   # mute stream
   echo "loadfile http://icecast8.play.cz/cro1-128.mp3" > /tmp/mplayer.fifo
@@ -40,7 +40,7 @@ start() {
 }
 
 stop() {
-  /usr/bin/rfmctrl 192.168.0.10 9000 N1 > /dev/null 2&>1
+  /usr/bin/rfmctrl 192.168.0.10 9000 N1 > /dev/null 2>&1
   /usr/bin/radio none
   killall websocketserver
   killall mplayer
