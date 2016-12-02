@@ -5,7 +5,7 @@ BUILDROOT_USE_GIT=1
 # you can set buildroot git version (branch or tag)
 BUILDROOT_BRANCH=master
 # you can set buildroot static version
-BUILDROOT_RELEASE=buildroot-2016.05
+BUILDROOT_RELEASE=buildroot-2016.11
 
 # project variable
 AUDIO_PATH=./audio
