@@ -1,7 +1,7 @@
 # you can set project name
 PROJECT_NAME=a13
 # you can set buildroot source
-BUILDROOT_USE_GIT=1
+BUILDROOT_USE_GIT=0
 # you can set buildroot git version (branch or tag)
 BUILDROOT_BRANCH=master
 # you can set buildroot static version
