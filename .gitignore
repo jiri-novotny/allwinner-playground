@@ -7,3 +7,5 @@ audio/images/
 audio/staging
 audio/target/
 audio/.config.old
+audio/overlay/etc/wpa_supplicant.conf
+audio/overlay/root/.ssh
