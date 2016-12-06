@@ -1,12 +1,23 @@
 #!/bin/sh
 
+USE_WIFI=0
+
 start() {
   echo "Starting apps..."
 
-  # wait for network
-  sleep 1
-  # start network
-  ifup eth0
+  if [ $USE_WIFI -eq 0 ]; then
+    # wait for network
+    sleep 1
+    # start network
+    ifup eth0
+  else
+    # wait for network
+    sleep 2
+    # start wpa
+    wpa_supplicant -c /etc/wpa_supplicant.conf -B -D nl80211 -i wlan0
+    # start network
+    ifup wlan0
+  fi
 
   # set time
   if [ `ip a | grep inet | wc -l` -gt 1 ]; then
@@ -26,9 +37,7 @@ start() {
   mplayer -cache 500 -idle -slave -input file=/tmp/mplayer.fifo > /dev/null 2>&1 &
   
   # mute stream
-  echo "loadfile http://icecast8.play.cz/cro1-128.mp3" > /tmp/mplayer.fifo
-  amixer sset 'Left Mixer Left DAC',0 on > /dev/null 2> /dev/null
-  amixer sset 'Right Mixer Right DAC',0 on > /dev/null 2> /dev/null
+  /usr/bin/radio none
 
   # start websocket server
   nohup /usr/sbin/websocketserver > /dev/null 2> /dev/null &
