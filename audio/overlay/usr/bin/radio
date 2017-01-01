@@ -27,8 +27,7 @@ case $1 in
 esac
 
 if [ ! $VAR == "none" ]; then
-  killall speaker-test > /dev/null 2> /dev/null
-  sleep 0.5
+  echo "stop" > /tmp/mplayer.fifo
   echo "loadfile $VAR" > /tmp/mplayer.fifo
   sleep ${SLEEP_TIME}
   amixer sset 'Left Mixer Left DAC',0 off  > /dev/null 2> /dev/null &
@@ -37,6 +36,5 @@ else
   amixer sset 'Left Mixer Left DAC',0 on > /dev/null 2> /dev/null &
   amixer sset 'Right Mixer Right DAC',0 on > /dev/null 2> /dev/null &
   echo "stop" > /tmp/mplayer.fifo
-  sleep 0.5
-  speaker-test > /dev/null 2> /dev/null &
+  echo "loadfile /usr/share/sounds/alsa/Noise.wav" > /tmp/mplayer.fifo
 fi
