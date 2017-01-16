@@ -1,0 +1,5 @@
+#!/bin/sh
+
+if [ `ps | grep mplayer | wc -l` -lt 3 ]; then
+  /usr/bin/radio none
+fi
