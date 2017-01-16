@@ -9,7 +9,7 @@ BUILDROOT_RELEASE=buildroot-2016.11
 
 # project variable
 AUDIO_PATH=./audio
-KERNEL_PATH=$(AUDIO_PATH)/build/linux-4.9-rc3
+KERNEL_PATH=$(AUDIO_PATH)/build/linux-4.10-rc4
 
 # you probably dont want to change buildroot source url
 BUILDROOT_GIT=git://git.buildroot.net/buildroot
