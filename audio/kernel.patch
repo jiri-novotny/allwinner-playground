@@ -1,8 +1,8 @@
 diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-index befcd26..99524dc 100644
+index 7327250..a90162c 100644
 --- a/arch/arm/boot/dts/Makefile
 +++ b/arch/arm/boot/dts/Makefile
-@@ -757,6 +757,7 @@ dtb-$(CONFIG_MACH_SUN5I) += \
+@@ -782,6 +782,7 @@ dtb-$(CONFIG_MACH_SUN5I) += \
  	sun5i-a13-empire-electronix-m712.dtb \
  	sun5i-a13-hsg-h702.dtb \
  	sun5i-a13-inet-98v-rev2.dtb \
@@ -12,10 +12,10 @@ index befcd26..99524dc 100644
  	sun5i-a13-q8-tablet.dtb \
 diff --git a/arch/arm/boot/dts/sun5i-a13-olimex-som-bpl.dts b/arch/arm/boot/dts/sun5i-a13-olimex-som-bpl.dts
 new file mode 100644
-index 0000000..2a78d21
+index 0000000..3f5a84d
 --- /dev/null
 +++ b/arch/arm/boot/dts/sun5i-a13-olimex-som-bpl.dts
-@@ -0,0 +1,311 @@
+@@ -0,0 +1,297 @@
 +/*
 + * Copyright 2012 Jiri Novotny
 + *
@@ -241,20 +241,6 @@ index 0000000..2a78d21
 +		allwinner,pull = <SUN4I_PINCTRL_PULL_DOWN>;
 +	};
 +
-+	spi2_pins_a: spi2@0 {
-+		allwinner,pins = "PE1", "PE2", "PE3";
-+		allwinner,function = "spi2";
-+		allwinner,drive = <SUN4I_PINCTRL_10_MA>;
-+		allwinner,pull = <SUN4I_PINCTRL_NO_PULL>;
-+	};
-+
-+	spi2_cs0_pins_a: spi2_cs0@0 {
-+		allwinner,pins = "PE0";
-+		allwinner,function = "spi2";
-+		allwinner,drive = <SUN4I_PINCTRL_10_MA>;
-+		allwinner,pull = <SUN4I_PINCTRL_NO_PULL>;
-+	};
-+
 +	nand_pins_a: nand_pins@0 {
 +		allwinner,pins = "PC0", "PC1", "PC2", "PC5",
 +				"PC8", "PC9", "PC10", "PC11",
@@ -327,28 +313,8 @@ index 0000000..2a78d21
 +		nand-on-flash-bbt;
 +	};
 +};
-diff --git a/arch/arm/boot/dts/sun5i-a13-utoo-p66.dts b/arch/arm/boot/dts/sun5i-a13-utoo-p66.dts
-index a8b0bcc..0b367c1 100644
---- a/arch/arm/boot/dts/sun5i-a13-utoo-p66.dts
-+++ b/arch/arm/boot/dts/sun5i-a13-utoo-p66.dts
-@@ -128,6 +128,15 @@
- 		allwinner,drive = <SUN4I_PINCTRL_10_MA>;
- 		allwinner,pull = <SUN4I_PINCTRL_NO_PULL>;
- 	};
-+  
-+	mmc2_pins_a: mmc2@0 {
-+		allwinner,pins = "PC6", "PC7", "PC8", "PC9",
-+		"PC10", "PC11", "PC12", "PC13",
-+		"PC14", "PC15";
-+		allwinner,function = "mmc2";
-+		allwinner,drive = <SUN4I_PINCTRL_30_MA>;
-+		allwinner,pull = <SUN4I_PINCTRL_PULL_UP>;
-+	};
- 
- };
- 
 diff --git a/arch/arm/boot/dts/sun5i.dtsi b/arch/arm/boot/dts/sun5i.dtsi
-index e374f4f..645367b 100644
+index b0fca4e..e845472 100644
 --- a/arch/arm/boot/dts/sun5i.dtsi
 +++ b/arch/arm/boot/dts/sun5i.dtsi
 @@ -399,6 +399,19 @@
@@ -371,19 +337,3 @@ index e374f4f..645367b 100644
  		spi0: spi@01c05000 {
  			compatible = "allwinner,sun4i-a10-spi";
  			reg = <0x01c05000 0x1000>;
-@@ -582,15 +595,6 @@
- 				allwinner,pull = <SUN4I_PINCTRL_NO_PULL>;
- 			};
- 
--			mmc2_pins_a: mmc2@0 {
--				allwinner,pins = "PC6", "PC7", "PC8", "PC9",
--					"PC10", "PC11", "PC12", "PC13",
--					"PC14", "PC15";
--				allwinner,function = "mmc2";
--				allwinner,drive = <SUN4I_PINCTRL_30_MA>;
--				allwinner,pull = <SUN4I_PINCTRL_PULL_UP>;
--			};
--
- 			uart3_pins_a: uart3@0 {
- 				allwinner,pins = "PG9", "PG10";
- 				allwinner,function = "uart3";
