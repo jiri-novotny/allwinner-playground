@@ -1,9 +1,11 @@
+var ip="1.1.1.1";
+
 if ("WebSocket" in window)
 {
   //alert("WebSocket is supported by your Browser!");
 
   // Let us open a web socket
-  var ws = new WebSocket("ws://192.168.1.20:3000");
+  var ws = new WebSocket("ws://" + ip + ":3000");
 
   ws.onopen = function()
   {
