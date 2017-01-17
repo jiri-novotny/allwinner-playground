@@ -6,11 +6,13 @@ start() {
   echo "Starting apps..."
 
   if [ $USE_WIFI -eq 0 ]; then
+    IFACE=eth
     # wait for network
     sleep 1
     # start network
     ifup eth0
   else
+    IFACE=wlan
     # wait for network
     sleep 2
     # start wpa
@@ -27,7 +29,7 @@ start() {
     echo "No IP, skipping date config..."
   fi
 
-  IP=`ip a | grep eth | grep inet | cut -d "/" -f 1 | grep -o '[^ ]*$'`
+  IP=`ip a | grep $IFACE | grep inet | cut -d "/" -f 1 | grep -o '[^ ]*$'`
   sed "1s/.*/var ip=\"$IP\";/" /etc/websock.js > /usr/html/js/websock.js
 
   # set default state
@@ -44,7 +46,7 @@ start() {
   
   # start cron
   mkdir -p /var/spool/cron/crontabs
-  cp /etc/crond/root /var/spool/cron/crontabs
+  cp /etc/crond/* /var/spool/cron/crontabs
   crond
 }
 
