@@ -1,11 +1,5 @@
-buildroot/
-audio/..config.tmp
-audio/.br-external.mk
-audio/build/
-audio/host/
-audio/images/
-audio/staging
-audio/target/
-audio/.config.old
-audio/overlay/etc/wpa_supplicant.conf
-audio/overlay/root/.ssh
+src/buildroot/
+src/allwinner/board/a13som-audio/overlay/etc/wpa_supplicant.conf
+src/allwinner/board/a13som-audio/overlay/root/
+audio/
+h2zero/
