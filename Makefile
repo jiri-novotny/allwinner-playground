@@ -1,52 +1,85 @@
-# you can set project name
-PROJECT_NAME=a13
+###############################################################################
+#
+# Author: Jiri Novotny <jiri.novotny@logicelements.cz>
+#
+###############################################################################
+
 # you can set buildroot source
 BUILDROOT_USE_GIT=0
 # you can set buildroot git version (branch or tag)
-BUILDROOT_BRANCH=master
+BUILDROOT_BRANCH=2016.11.x
 # you can set buildroot static version
-BUILDROOT_RELEASE=buildroot-2016.11
+BUILDROOT_RELEASE=buildroot-2016.11.2
 
-# project variable
-AUDIO_PATH=./audio
-KERNEL_PATH=$(AUDIO_PATH)/build/linux-4.10-rc4
+# you current project name
+CURRENT_PROJECT=h2zero
+CURRENT_DEFCONFIG=$(CURRENT_PROJECT)_defconfig
+
+# you can modify paths for target deployment
+SD_PATH=/mnt
 
 # you probably dont want to change buildroot source url
 BUILDROOT_GIT=git://git.buildroot.net/buildroot
 BUILDROOT_URL=https://buildroot.org/downloads/$(BUILDROOT_RELEASE).tar.gz
 
 # dont edit after this line
-SRC_PATH=./buildroot
-PATCH_PATH=./patches
-MOUNT_PATH=/mnt
+BUILD_PATH=$(CURRENT_PROJECT)
+EXTRA_PATH=allwinner
+SRC_PATH=src
+BASE_PATH=$(shell pwd)
 
 .PHONY: prepare audio
 
-all: prepare audio
+# Do not build "linux" by default since it is already built as part of Buildroot
+all: prepare buildroot_defconfig buildroot
 
 prepare:
-	if [ ! -d $(SRC_PATH) ]; then \
+	if [ ! -d $(SRC_PATH)/buildroot ]; then \
 		if [ $(BUILDROOT_USE_GIT) -eq 0 ]; then \
-			wget -O /tmp/buildroot.tar.gz $(BUILDROOT_URL) && \
-			tar zxf /tmp/buildroot.tar.gz -C /tmp && \
-			mv /tmp/$(BUILDROOT_RELEASE) $(SRC_PATH); \
+			wget -O /tmp/buildroot.tar.gz $(BUILDROOT_URL); \
+			tar zxf /tmp/buildroot.tar.gz -C /tmp; \
+			mv /tmp/$(BUILDROOT_RELEASE) $(SRC_PATH)/buildroot; \
 		else \
-			git clone -b $(BUILDROOT_BRANCH) $(BUILDROOT_GIT); \
+			git clone -b $(BUILDROOT_BRANCH) $(BUILDROOT_GIT) $(SRC_PATH)/buildroot; \
 		fi; \
-		# apply BR patches \
-		cd $(SRC_PATH); \
-		patch -p1 < .$(PATCH_PATH)/br-patch/0001-Add-libuwebsocket-package.patch; \
-		patch -p1 < .$(PATCH_PATH)/br-patch/0002-Add-shairport-package.patch; \
 	fi
 
-audio:
-	make -C $(AUDIO_PATH)
+uboot:
+	$(MAKE) BR2_EXTERNAL=../$(EXTRA_PATH) -C $(SRC_PATH)/buildroot O=../../$(BUILD_PATH) uboot
 
-audioconfig: prepare
-	make -C $(AUDIO_PATH) menuconfig
+linux:
+	$(MAKE) BR2_EXTERNAL=../$(EXTRA_PATH) -C $(SRC_PATH)/buildroot O=../../$(BUILD_PATH) linux
 
-install: prepare audio
+linux_config:
+	$(MAKE) BR2_EXTERNAL=../$(EXTRA_PATH) -C $(SRC_PATH)/buildroot O=../../$(BUILD_PATH) linux-menuconfig
+
+linux_rebuild:
+	$(MAKE) BR2_EXTERNAL=../$(EXTRA_PATH) -C $(SRC_PATH)/buildroot O=../../$(BUILD_PATH) linux-rebuild
+
+$(CURRENT_PROJECT): buildroot
+$(CURRENT_PROJECT)_config: buildroot_config
+$(CURRENT_PROJECT)_defconfig: buildroot_defconfig
+$(CURRENT_PROJECT)_savedefconfig: buildroot_savedefconfig
+$(CURRENT_PROJECT)_clean: buildroot_clean
+
+buildroot:
+	$(MAKE) BR2_EXTERNAL=../$(EXTRA_PATH) -C $(SRC_PATH)/buildroot O=../../$(BUILD_PATH)
+	
+buildroot_config:
+	$(MAKE) BR2_EXTERNAL=../$(EXTRA_PATH) -C $(SRC_PATH)/buildroot O=../../$(BUILD_PATH) menuconfig
+	
+buildroot_defconfig:
+	$(MAKE) BR2_EXTERNAL=../$(EXTRA_PATH) -C $(SRC_PATH)/buildroot O=../../$(BUILD_PATH) $(CURRENT_DEFCONFIG)
+
+buildroot_savedefconfig:
+	$(MAKE) BR2_EXTERNAL=../$(EXTRA_PATH) -C $(SRC_PATH)/buildroot O=../../$(BUILD_PATH) savedefconfig
+
+buildroot_clean:
+	$(MAKE) BR2_EXTERNAL=../$(EXTRA_PATH) -C $(SRC_PATH)/buildroot O=../../$(BUILD_PATH) clean
+
+install: prepare uboot buildroot
 ifdef DRIVE
+	# Deploy image
 	echo -e "d\n\nd\n\nd\n\nd\no\n\nn\np\n1\n8192\n\n\nw\n" | sudo fdisk $(DRIVE)
 	sudo dd if=$(AUDIO_PATH)/images/u-boot-sunxi-with-spl.bin of=${DRIVE} bs=1024 seek=8
 	sudo mkfs.ext4 -F -L rootfs $(DRIVE)1
@@ -57,41 +90,43 @@ else
 	$(info Define DRIVE variable (e.g. DRIVE=/dev/sdx))
 endif
 
-copy: prepare audio
+update: buildroot
+ifdef DRIVE
+	# Deploy new kernel and modules
+	sudo mount $(DRIVE)1 $(SD_PATH)
+	sudo rm -rf $(SD_PATH)/boot/*
+	sudo rm -rf $(SD_PATH)/lib/modules/*
+	sudo cp $(BUILD_PATH)/images/zImage $(SD_PATH)/boot
+	sudo cp $(BUILD_PATH)/images/*.dtb $(SD_PATH)/boot
+	sudo tar -C $(SD_PATH) -xf $(BUILD_PATH)/images/rootfs.tar ./lib/modules
+	sudo umount $(SD_PATH)
+else
+	$(info Define DRIVE variable (e.g. DRIVE=/dev/sdc))
+endif
+
+copy: prepare uboot buildroot
 ifdef TARGET
 	if [ ! -d $(TARGET)/$(PROJECT_NAME) ]; then sudo mkdir $(TARGET)/$(PROJECT_NAME); fi
-	sudo cp $(AUDIO_PATH)/images/u-boot.imx $(TARGET)/$(PROJECT_NAME)
-	sudo cp $(AUDIO_PATH)/images/zImage $(TARGET)/$(PROJECT_NAME)
-	sudo cp $(AUDIO_PATH)/images/*.dtb $(TARGET)/$(PROJECT_NAME)
-	sudo cp $(AUDIO_PATH)/images/rootfs.ubi $(TARGET)/$(PROJECT_NAME)
+	sudo cp $(BUILD_PATH)/images/* $(TARGET)/$(PROJECT_NAME)
 else
 	$(info Define TARGET variable (e.g. TARGET=/mnt/))
 endif
 
-clean: prepare
-	make -C $(AUDIO_PATH) clean
-
-mrproper: prepare
-	make -C $(AUDIO_PATH) clean
-	rm -rf $(SRC_PATH)
-
-linuxconfig: prepare
-	if [ -d $(KERNEL_PATH) ]; then \
-		cp $(AUDIO_PATH)/kernel.cfg $(KERNEL_PATH)/.config; \
-		make ARCH=arm -C $(KERNEL_PATH) menuconfig; \
-		mv $(KERNEL_PATH)/.config $(AUDIO_PATH)/kernel.cfg; \
-	else \
-		echo "Kernel not found!"; \
-	fi
-
 help:
-	# help           - this help
-	# all            - default rule for build, triggers prepare and system"
-	# prepare        - download necessary files - buildroot
-	# audio          - default filesystem"
-	# audioconfig    - start buildroot filesystem menuconfig"
-	# linuxconfig    - start linux menuconfig"
-	# copy           - copy created filesystems to TARGET folder
-	# install        - copy system files and extract filesystem to DRIVE
-	# clean          - clean all build files
-	# mrproper       - clean all build files and remove all downloaded content
+	# all                        - default rule for build, triggers prepare and buildroot
+	# buildroot	                 - filesystem
+	# buildroot_clean            - remove filesystem
+	# buildroot_config		     - start buildroot filesystem menuconfig
+	# buildroot_defconfig        - buildroot filesystem default config
+	# buildroot_savedefconfig    - save buildroot filesystem default config
+	# linux                      - build linux separately
+	# linux_config               - start linux menuconfig
+	# linux_rebuild              - start linux rebuild
+	# prepare                    - init submodules and download all required resources
+	# recovery                   - build recovery filesystem
+	# recovery_clean             - clean recovery filesystem
+	# recovery_config            - menuconfig for recovery filesystem
+	# install                    - requires variable DRIVE, prepare partitions on DRIVE
+	# copy                       - requires variable TARGET, mounts TARGET and copy files
+	# update                     - requires variable DRIVE, mounts DRIVE and updates kernel, dtb and modules
+	# uboot                      - build uboot

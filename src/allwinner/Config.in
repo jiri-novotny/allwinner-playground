@@ -1,0 +1,1 @@
+source "$BR2_EXTERNAL_ALLWINNER_PATH/package/libuwebsockets/Config.in"
