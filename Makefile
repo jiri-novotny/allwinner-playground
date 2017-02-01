@@ -14,6 +14,7 @@ BUILDROOT_RELEASE=buildroot-2016.11.2
 # you current project name
 CURRENT_PROJECT=h2zero
 CURRENT_DEFCONFIG=$(CURRENT_PROJECT)_defconfig
+DEPLOY_UBOOT_MBR=0
 
 # you can modify paths for target deployment
 SD_PATH=/mnt
@@ -28,7 +29,7 @@ EXTRA_PATH=allwinner
 SRC_PATH=src
 BASE_PATH=$(shell pwd)
 
-.PHONY: prepare audio
+.PHONY: prepare
 
 # Do not build "linux" by default since it is already built as part of Buildroot
 all: prepare buildroot_defconfig buildroot
@@ -81,10 +82,13 @@ install: prepare uboot buildroot
 ifdef DRIVE
 	# Deploy image
 	echo -e "d\n\nd\n\nd\n\nd\no\n\nn\np\n1\n8192\n\n\nw\n" | sudo fdisk $(DRIVE)
-	sudo dd if=$(AUDIO_PATH)/images/u-boot-sunxi-with-spl.bin of=${DRIVE} bs=1024 seek=8
+	if [ $(DEPLOY_UBOOT_MBR) -eq 1 ]; then \
+		sudo dd if=$(BUILD_PATH)/images/u-boot-sunxi-with-spl.bin of=$(DRIVE) bs=1024 seek=8; \
+	fi
 	sudo mkfs.ext4 -F -L rootfs $(DRIVE)1
 	sudo mount $(DRIVE)1 $(MOUNT_PATH)
-	sudo tar -xf $(AUDIO_PATH)/images/rootfs.tar -C $(MOUNT_PATH)
+	sudo tar -xf $(BUILD_PATH)/images/rootfs.tar -C $(MOUNT_PATH)
+	sudo cp $(BUILD_PATH)/images/u-boot-sunxi-with-spl.bin -C $(MOUNT_PATH)/boot
 	sudo umount $(MOUNT_PATH)
 else
 	$(info Define DRIVE variable (e.g. DRIVE=/dev/sdx))
@@ -93,13 +97,13 @@ endif
 update: buildroot
 ifdef DRIVE
 	# Deploy new kernel and modules
-	sudo mount $(DRIVE)1 $(SD_PATH)
-	sudo rm -rf $(SD_PATH)/boot/*
-	sudo rm -rf $(SD_PATH)/lib/modules/*
-	sudo cp $(BUILD_PATH)/images/zImage $(SD_PATH)/boot
-	sudo cp $(BUILD_PATH)/images/*.dtb $(SD_PATH)/boot
-	sudo tar -C $(SD_PATH) -xf $(BUILD_PATH)/images/rootfs.tar ./lib/modules
-	sudo umount $(SD_PATH)
+	sudo mount $(DRIVE)1 $(MOUNT_PATH)
+	sudo rm -rf $(MOUNT_PATH)/boot/*
+	sudo rm -rf $(MOUNT_PATH)/lib/modules/*
+	sudo cp $(BUILD_PATH)/images/zImage $(MOUNT_PATH)/boot
+	sudo cp $(BUILD_PATH)/images/*.dtb $(MOUNT_PATH)/boot
+	sudo tar -C $(MOUNT_PATH) -xf $(BUILD_PATH)/images/rootfs.tar ./lib/modules
+	sudo umount $(MOUNT_PATH)
 else
 	$(info Define DRIVE variable (e.g. DRIVE=/dev/sdc))
 endif

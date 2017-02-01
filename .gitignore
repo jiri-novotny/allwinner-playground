@@ -3,5 +3,5 @@ src/linux-*/
 src/u-boot*/
 src/allwinner/board/a13som-audio/overlay/etc/wpa_supplicant.conf
 src/allwinner/board/a13som-audio/overlay/root/
-./audio/
-./h2zero/
+/a13som_audio/
+/h2zero/
