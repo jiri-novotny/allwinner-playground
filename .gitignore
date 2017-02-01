@@ -1,5 +1,7 @@
 src/buildroot/
+src/linux-*/
+src/u-boot*/
 src/allwinner/board/a13som-audio/overlay/etc/wpa_supplicant.conf
 src/allwinner/board/a13som-audio/overlay/root/
-audio/
-h2zero/
+./audio/
+./h2zero/
