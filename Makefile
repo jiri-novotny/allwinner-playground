@@ -85,10 +85,11 @@ ifdef DRIVE
 	if [ $(DEPLOY_UBOOT_MBR) -eq 1 ]; then \
 		sudo dd if=$(BUILD_PATH)/images/u-boot-sunxi-with-spl.bin of=$(DRIVE) bs=1024 seek=8; \
 	fi
+	sleep 1
 	sudo mkfs.ext4 -F -L rootfs $(DRIVE)1
 	sudo mount $(DRIVE)1 $(MOUNT_PATH)
 	sudo tar -xf $(BUILD_PATH)/images/rootfs.tar -C $(MOUNT_PATH)
-	sudo cp $(BUILD_PATH)/images/u-boot-sunxi-with-spl.bin -C $(MOUNT_PATH)/boot
+	sudo cp $(BUILD_PATH)/images/u-boot-sunxi-with-spl.bin $(MOUNT_PATH)/boot
 	sudo umount $(MOUNT_PATH)
 else
 	$(info Define DRIVE variable (e.g. DRIVE=/dev/sdx))
