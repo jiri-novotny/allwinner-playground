@@ -1,0 +1,39 @@
+From 86b0bdbe10f8a894f2d3c63854db2cacc577faf7 Mon Sep 17 00:00:00 2001
+From: Jiri Novotny <jiri.novotny@logicelements.cz>
+Date: Wed, 1 Feb 2017 13:06:53 +0100
+Subject: [PATCH 1/8] add zero config
+
+Signed-off-by: Jiri Novotny <jiri.novotny@logicelements.cz>
+---
+ configs/orangepi_zero_defconfig | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+ create mode 100644 configs/orangepi_zero_defconfig
+
+diff --git a/configs/orangepi_zero_defconfig b/configs/orangepi_zero_defconfig
+new file mode 100644
+index 0000000..2e66d46
+--- /dev/null
++++ b/configs/orangepi_zero_defconfig
+@@ -0,0 +1,18 @@
++CONFIG_ARM=y
++CONFIG_ARCH_SUNXI=y
++CONFIG_MACH_SUN8I_H3=y
++CONFIG_DRAM_CLK=672
++CONFIG_DRAM_ZQ=3881979
++CONFIG_DRAM_ODT_EN=y
++CONFIG_DEFAULT_DEVICE_TREE="sun8i-h3-orangepi-one"
++# CONFIG_SYS_MALLOC_CLEAR_ON_INIT is not set
++CONFIG_CONSOLE_MUX=y
++CONFIG_SPL=y
++# CONFIG_CMD_IMLS is not set
++# CONFIG_CMD_FLASH is not set
++# CONFIG_CMD_FPGA is not set
++CONFIG_SUN8I_EMAC=y
++CONFIG_USB_EHCI_HCD=y
++CONFIG_SPL_SPI_FLASH_SUPPORT=y
++CONFIG_SPI_BOOT=y
++CONFIG_SPL_SPI_SUNXI=y
+\ No newline at end of file
+-- 
+2.7.4
+

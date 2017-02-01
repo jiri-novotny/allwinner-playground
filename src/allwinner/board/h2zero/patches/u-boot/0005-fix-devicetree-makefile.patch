@@ -1,0 +1,25 @@
+From 9d1e5542c16b9bf23356a13e87ab70e6cca85a25 Mon Sep 17 00:00:00 2001
+From: Jiri Novotny <jiri.novotny@logicelements.cz>
+Date: Wed, 1 Feb 2017 14:25:03 +0100
+Subject: [PATCH 5/8] fix devicetree makefile
+
+Signed-off-by: Jiri Novotny <jiri.novotny@logicelements.cz>
+---
+ arch/arm/dts/Makefile | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/arm/dts/Makefile b/arch/arm/dts/Makefile
+index 3ee608b..66ea0b3 100644
+--- a/arch/arm/dts/Makefile
++++ b/arch/arm/dts/Makefile
+@@ -271,6 +271,7 @@ dtb-$(CONFIG_MACH_SUN8I_A83T) += \
+ 	sun8i-a83t-cubietruck-plus.dtb \
+ 	sun8i-a83t-sinovoip-bpi-m3.dtb
+ dtb-$(CONFIG_MACH_SUN8I_H3) += \
++	sun8i-h2-plus-orangepi-zero.dtb \
+ 	sun8i-h3-bananapi-m2-plus.dtb \
+ 	sun8i-h3-orangepi-2.dtb \
+ 	sun8i-h3-orangepi-lite.dtb \
+-- 
+2.7.4
+
