@@ -17,7 +17,7 @@ CURRENT_DEFCONFIG=$(CURRENT_PROJECT)_defconfig
 DEPLOY_UBOOT_MBR=0
 
 # you can modify paths for target deployment
-SD_PATH=/mnt
+MOUNT_PATH=/mnt
 
 # you probably dont want to change buildroot source url
 BUILDROOT_GIT=git://git.buildroot.net/buildroot
@@ -78,7 +78,7 @@ buildroot_savedefconfig:
 buildroot_clean:
 	$(MAKE) BR2_EXTERNAL=../$(EXTRA_PATH) -C $(SRC_PATH)/buildroot O=../../$(BUILD_PATH) clean
 
-install: prepare uboot buildroot
+install: prepare buildroot
 ifdef DRIVE
 	# Deploy image
 	echo -e "d\n\nd\n\nd\n\nd\no\n\nn\np\n1\n8192\n\n\nw\n" | sudo fdisk $(DRIVE)
@@ -108,7 +108,7 @@ else
 	$(info Define DRIVE variable (e.g. DRIVE=/dev/sdc))
 endif
 
-copy: prepare uboot buildroot
+copy: prepare buildroot
 ifdef TARGET
 	if [ ! -d $(TARGET)/$(PROJECT_NAME) ]; then sudo mkdir $(TARGET)/$(PROJECT_NAME); fi
 	sudo cp $(BUILD_PATH)/images/* $(TARGET)/$(PROJECT_NAME)
