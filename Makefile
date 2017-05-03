@@ -5,16 +5,16 @@
 ###############################################################################
 
 # you can set buildroot source
-BUILDROOT_USE_GIT=0
+BUILDROOT_USE_GIT=1
 # you can set buildroot git version (branch or tag)
-BUILDROOT_BRANCH=2016.11.x
+BUILDROOT_BRANCH=master
 # you can set buildroot static version
-BUILDROOT_RELEASE=buildroot-2016.11.2
+BUILDROOT_RELEASE=buildroot-2017.02.2
 
 # you current project name
-CURRENT_PROJECT=h2zero
-CURRENT_DEFCONFIG=$(CURRENT_PROJECT)_defconfig
-DEPLOY_UBOOT_MBR=0
+CURRENT_PROJECT?=h2zero
+CURRENT_DEFCONFIG?=$(CURRENT_PROJECT)_defconfig
+DEPLOY_UBOOT_MBR?=0
 
 # you can modify paths for target deployment
 MOUNT_PATH=/mnt
@@ -27,12 +27,11 @@ BUILDROOT_URL=https://buildroot.org/downloads/$(BUILDROOT_RELEASE).tar.gz
 BUILD_PATH=$(CURRENT_PROJECT)
 EXTRA_PATH=allwinner
 SRC_PATH=src
-BASE_PATH=$(shell pwd)
 
 .PHONY: prepare
 
 # Do not build "linux" by default since it is already built as part of Buildroot
-all: prepare buildroot_defconfig buildroot
+all: prepare defconfig image
 
 prepare:
 	if [ ! -d $(SRC_PATH)/buildroot ]; then \
@@ -57,28 +56,22 @@ linux_config:
 linux_rebuild:
 	$(MAKE) BR2_EXTERNAL=../$(EXTRA_PATH) -C $(SRC_PATH)/buildroot O=../../$(BUILD_PATH) linux-rebuild
 
-$(CURRENT_PROJECT): buildroot
-$(CURRENT_PROJECT)_config: buildroot_config
-$(CURRENT_PROJECT)_defconfig: buildroot_defconfig
-$(CURRENT_PROJECT)_savedefconfig: buildroot_savedefconfig
-$(CURRENT_PROJECT)_clean: buildroot_clean
-
-buildroot:
+image:
 	$(MAKE) BR2_EXTERNAL=../$(EXTRA_PATH) -C $(SRC_PATH)/buildroot O=../../$(BUILD_PATH)
 	
-buildroot_config:
+config:
 	$(MAKE) BR2_EXTERNAL=../$(EXTRA_PATH) -C $(SRC_PATH)/buildroot O=../../$(BUILD_PATH) menuconfig
 	
-buildroot_defconfig:
+defconfig:
 	$(MAKE) BR2_EXTERNAL=../$(EXTRA_PATH) -C $(SRC_PATH)/buildroot O=../../$(BUILD_PATH) $(CURRENT_DEFCONFIG)
 
-buildroot_savedefconfig:
+savedefconfig:
 	$(MAKE) BR2_EXTERNAL=../$(EXTRA_PATH) -C $(SRC_PATH)/buildroot O=../../$(BUILD_PATH) savedefconfig
 
-buildroot_clean:
+clean:
 	$(MAKE) BR2_EXTERNAL=../$(EXTRA_PATH) -C $(SRC_PATH)/buildroot O=../../$(BUILD_PATH) clean
 
-install: prepare buildroot
+install: prepare image
 ifdef DRIVE
 	# Deploy image
 	echo -e "d\n\nd\n\nd\n\nd\no\n\nn\np\n1\n8192\n\n\nw\n" | sudo fdisk $(DRIVE)
@@ -95,7 +88,7 @@ else
 	$(info Define DRIVE variable (e.g. DRIVE=/dev/sdx))
 endif
 
-update: buildroot
+update: image
 ifdef DRIVE
 	# Deploy new kernel and modules
 	sudo mount $(DRIVE)1 $(MOUNT_PATH)
@@ -109,7 +102,7 @@ else
 	$(info Define DRIVE variable (e.g. DRIVE=/dev/sdc))
 endif
 
-copy: prepare buildroot
+copy: prepare image
 ifdef TARGET
 	if [ ! -d $(TARGET)/$(PROJECT_NAME) ]; then sudo mkdir $(TARGET)/$(PROJECT_NAME); fi
 	sudo cp $(BUILD_PATH)/images/* $(TARGET)/$(PROJECT_NAME)
@@ -119,11 +112,11 @@ endif
 
 help:
 	# all                        - default rule for build, triggers prepare and buildroot
-	# buildroot	                 - filesystem
-	# buildroot_clean            - remove filesystem
-	# buildroot_config		     - start buildroot filesystem menuconfig
-	# buildroot_defconfig        - buildroot filesystem default config
-	# buildroot_savedefconfig    - save buildroot filesystem default config
+	# image	                     - filesystem
+	# clean                      - remove filesystem
+	# config		             - start buildroot filesystem menuconfig
+	# defconfig                  - buildroot filesystem default config
+	# savedefconfig              - save buildroot filesystem default config
 	# linux                      - build linux separately
 	# linux_config               - start linux menuconfig
 	# linux_rebuild              - start linux rebuild
