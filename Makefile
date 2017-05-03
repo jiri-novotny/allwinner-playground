@@ -112,18 +112,15 @@ endif
 
 help:
 	# all                        - default rule for build, triggers prepare and buildroot
-	# image	                     - filesystem
+	# image                      - filesystem
 	# clean                      - remove filesystem
-	# config		             - start buildroot filesystem menuconfig
+	# config                     - start buildroot filesystem menuconfig
 	# defconfig                  - buildroot filesystem default config
 	# savedefconfig              - save buildroot filesystem default config
 	# linux                      - build linux separately
 	# linux_config               - start linux menuconfig
 	# linux_rebuild              - start linux rebuild
-	# prepare                    - init submodules and download all required resources
-	# recovery                   - build recovery filesystem
-	# recovery_clean             - clean recovery filesystem
-	# recovery_config            - menuconfig for recovery filesystem
+	# prepare                    - download all required resources
 	# install                    - requires variable DRIVE, prepare partitions on DRIVE
 	# copy                       - requires variable TARGET, mounts TARGET and copy files
 	# update                     - requires variable DRIVE, mounts DRIVE and updates kernel, dtb and modules
