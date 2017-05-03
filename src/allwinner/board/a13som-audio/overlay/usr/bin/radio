@@ -19,6 +19,9 @@ case $1 in
   none)
     VAR=none
   ;;
+  file)
+    VAR=$2
+  ;;
   *)
     echo "USAGE: radio [station_name]"
     echo "  where [station_name] is bbc1, bbc2, cro1, cro2, none"
