@@ -53,7 +53,7 @@ linux:
 
 linux_config:
 	$(MAKE) BR2_EXTERNAL=../$(EXTRA_PATH) -C $(SRC_PATH)/buildroot O=../../$(BUILD_PATH) linux-menuconfig
-	cp $(BUILD_PATH)/build/`find $(BUILD_PATH)/build/linux-* -maxdepth 0 | grep -v -e headers -e firmware | cut -d "/" -f 3`/.config $(SRC_PATH)/$(EXTRA_PATH)/board/ja165e-$(PROJECT)-$(SUBPROJECT)/kernel.cfg
+	cp $(BUILD_PATH)/build/`find $(BUILD_PATH)/build/linux-* -maxdepth 0 | grep -v -e headers -e firmware | cut -d "/" -f 3`/.config $(SRC_PATH)/$(EXTRA_PATH)/board/$(CURRENT_PROJECT)/kernel.cfg
 
 linux_rebuild:
 	$(MAKE) BR2_EXTERNAL=../$(EXTRA_PATH) -C $(SRC_PATH)/buildroot O=../../$(BUILD_PATH) linux-rebuild
