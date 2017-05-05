@@ -325,7 +325,7 @@ index a9574a6..4b1be69 100644
 +			compatible = "allwinner,sun4i-a10-nand";
 +			reg = <0x01c03000 0x1000>;
 +			interrupts = <37>;
-+			clocks = <&ahb_gates 13>, <&nand_clk>;
++			clocks = <&ccu CLK_AHB_NAND>, <&ccu CLK_NAND>;
 +			clock-names = "ahb", "mod";
 +			dmas = <&dma SUN4I_DMA_DEDICATED 3>;
 +			dma-names = "rxtx";
