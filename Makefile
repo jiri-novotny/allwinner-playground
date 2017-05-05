@@ -47,15 +47,21 @@ prepare:
 uboot:
 	$(MAKE) BR2_EXTERNAL=../$(EXTRA_PATH) -C $(SRC_PATH)/buildroot O=../../$(BUILD_PATH) uboot
 
+
 linux:
 	$(MAKE) BR2_EXTERNAL=../$(EXTRA_PATH) -C $(SRC_PATH)/buildroot O=../../$(BUILD_PATH) linux
 
 linux_config:
 	$(MAKE) BR2_EXTERNAL=../$(EXTRA_PATH) -C $(SRC_PATH)/buildroot O=../../$(BUILD_PATH) linux-menuconfig
+	cp $(BUILD_PATH)/build/`find $(BUILD_PATH)/build/linux-* -maxdepth 0 | grep -v -e headers -e firmware | cut -d "/" -f 3`/.config $(SRC_PATH)/$(EXTRA_PATH)/board/ja165e-$(PROJECT)-$(SUBPROJECT)/kernel.cfg
 
 linux_rebuild:
 	$(MAKE) BR2_EXTERNAL=../$(EXTRA_PATH) -C $(SRC_PATH)/buildroot O=../../$(BUILD_PATH) linux-rebuild
 
+linux_newbuild:
+	rm -rf $(SRC_PATH)/buildroot/dl/`find $(BUILD_PATH)/build/linux-* -maxdepth 0 | grep -v -e headers -e firmware | cut -d "/" -f 3`.tar.gz
+	$(MAKE) BR2_EXTERNAL=../$(EXTRA_PATH) -C $(SRC_PATH)/buildroot O=../../$(BUILD_PATH) linux-dirclean
+	$(MAKE) BR2_EXTERNAL=../$(EXTRA_PATH) -C $(SRC_PATH)/buildroot O=../../$(BUILD_PATH) linux
 image:
 	$(MAKE) BR2_EXTERNAL=../$(EXTRA_PATH) -C $(SRC_PATH)/buildroot O=../../$(BUILD_PATH)
 	
@@ -120,6 +126,7 @@ help:
 	# linux                      - build linux separately
 	# linux_config               - start linux menuconfig
 	# linux_rebuild              - start linux rebuild
+	# linux_newbuild             - start new (clean) linux build
 	# prepare                    - download all required resources
 	# install                    - requires variable DRIVE, prepare partitions on DRIVE
 	# copy                       - requires variable TARGET, mounts TARGET and copy files
