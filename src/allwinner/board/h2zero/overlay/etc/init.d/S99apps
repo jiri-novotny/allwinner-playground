@@ -28,9 +28,18 @@ start() {
   else
     echo "No IP, skipping date config..."
   fi
+
+  # start cron
+  mkdir -p /var/spool/cron/crontabs
+  cp /etc/crond/* /var/spool/cron/crontabs
+  crond
 }
 
 stop() {
+  ifdown -a
+  if [ $USE_WIFI -eq 1 ]; then
+    killall wpa_supplicant
+  fi
   killall crond
   rm -rf /var/spool/cron
 }
