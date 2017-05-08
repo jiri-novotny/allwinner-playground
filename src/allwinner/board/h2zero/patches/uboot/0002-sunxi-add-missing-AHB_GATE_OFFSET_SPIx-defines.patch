@@ -1,0 +1,42 @@
+From 3384c8f2ae21ed7109696159c8fe992447b5ef43 Mon Sep 17 00:00:00 2001
+From: Jiri Novotny <jiri.novotny@logicelements.cz>
+Date: Mon, 8 May 2017 21:15:30 +0200
+Subject: [PATCH] sunxi-add-missing-AHB_GATE_OFFSET_SPIx-defines
+
+Signed-off-by: Jiri Novotny <jiri.novotny@logicelements.cz>
+---
+ arch/arm/include/asm/arch-sunxi/clock_sun6i.h | 2 ++
+ arch/arm/include/asm/arch-sunxi/clock_sun9i.h | 4 ++++
+ 2 files changed, 6 insertions(+)
+
+diff --git a/arch/arm/include/asm/arch-sunxi/clock_sun6i.h b/arch/arm/include/asm/arch-sunxi/clock_sun6i.h
+index faa1479..70b01a7 100644
+--- a/arch/arm/include/asm/arch-sunxi/clock_sun6i.h
++++ b/arch/arm/include/asm/arch-sunxi/clock_sun6i.h
+@@ -289,6 +289,8 @@ struct sunxi_ccm_reg {
+ #define AHB_GATE_OFFSET_USB0		25
+ #define AHB_GATE_OFFSET_SATA		24
+ #endif
++#define AHB_GATE_OFFSET_SPI1		21
++#define AHB_GATE_OFFSET_SPI0		20
+ #define AHB_GATE_OFFSET_MCTL		14
+ #define AHB_GATE_OFFSET_GMAC		17
+ #define AHB_GATE_OFFSET_NAND0		13
+diff --git a/arch/arm/include/asm/arch-sunxi/clock_sun9i.h b/arch/arm/include/asm/arch-sunxi/clock_sun9i.h
+index 0aeb640..224fc47 100644
+--- a/arch/arm/include/asm/arch-sunxi/clock_sun9i.h
++++ b/arch/arm/include/asm/arch-sunxi/clock_sun9i.h
+@@ -195,6 +195,10 @@ struct sunxi_ccm_reg {
+ 
+ /* ahb gate1 field */
+ #define AHB_GATE_OFFSET_DMA		24
++#define AHB_GATE_OFFSET_SPI3		23
++#define AHB_GATE_OFFSET_SPI2		22
++#define AHB_GATE_OFFSET_SPI1		21
++#define AHB_GATE_OFFSET_SPI0		20
+ 
+ /* apb1_gate fields */
+ #define APB1_GATE_UART_SHIFT		16
+-- 
+2.7.4
+
