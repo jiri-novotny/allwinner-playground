@@ -1,22 +1,26 @@
-From 3384c8f2ae21ed7109696159c8fe992447b5ef43 Mon Sep 17 00:00:00 2001
-From: Jiri Novotny <jiri.novotny@logicelements.cz>
-Date: Mon, 8 May 2017 21:15:30 +0200
-Subject: [PATCH] sunxi-add-missing-AHB_GATE_OFFSET_SPIx-defines
+From f9ed94265ba493a331853a92cba335f5fe507362 Mon Sep 17 00:00:00 2001
+From: "S.J.R. van Schaik" <stephan@synkhronix.com>
+Date: Fri, 10 Feb 2017 12:04:17 +0000
+Subject: [PATCH] sunxi: add missing AHB_GATE_OFFSET_SPIx defines for
+ sun6i/sun9i
 
-Signed-off-by: Jiri Novotny <jiri.novotny@logicelements.cz>
+Added missing AHB_GATE_OFFSET_SPIx defines to enable/disable clock gating for
+SPI on the sun6i and sun9i platforms.
+
+Signed-off-by: S.J.R. van Schaik <stephan@whiteboxsystems.nl>
 ---
  arch/arm/include/asm/arch-sunxi/clock_sun6i.h | 2 ++
  arch/arm/include/asm/arch-sunxi/clock_sun9i.h | 4 ++++
  2 files changed, 6 insertions(+)
 
 diff --git a/arch/arm/include/asm/arch-sunxi/clock_sun6i.h b/arch/arm/include/asm/arch-sunxi/clock_sun6i.h
-index faa1479..70b01a7 100644
+index 3f87672..fd778dd 100644
 --- a/arch/arm/include/asm/arch-sunxi/clock_sun6i.h
 +++ b/arch/arm/include/asm/arch-sunxi/clock_sun6i.h
-@@ -289,6 +289,8 @@ struct sunxi_ccm_reg {
- #define AHB_GATE_OFFSET_USB0		25
- #define AHB_GATE_OFFSET_SATA		24
+@@ -255,6 +255,8 @@ struct sunxi_ccm_reg {
+ #define AHB_GATE_OFFSET_USB_EHCI0	26
  #endif
+ #define AHB_GATE_OFFSET_USB0		24
 +#define AHB_GATE_OFFSET_SPI1		21
 +#define AHB_GATE_OFFSET_SPI0		20
  #define AHB_GATE_OFFSET_MCTL		14

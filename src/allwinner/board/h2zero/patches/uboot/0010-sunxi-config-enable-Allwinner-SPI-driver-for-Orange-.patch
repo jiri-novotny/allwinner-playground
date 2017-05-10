@@ -1,15 +1,5 @@
-From 37cedd834f676afbba6115297e0763970dbfa883 Mon Sep 17 00:00:00 2001
-From: Jiri Novotny <jiri.novotny@logicelements.cz>
-Date: Mon, 8 May 2017 21:24:28 +0200
-Subject: [PATCH] sunxi-config-enable-Allwinner-SPI-driver-for-Orange-Pi
-
-Signed-off-by: Jiri Novotny <jiri.novotny@logicelements.cz>
----
- configs/orangepi_zero_defconfig | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
-
 diff --git a/configs/orangepi_zero_defconfig b/configs/orangepi_zero_defconfig
-index 97ef089..c6274c6 100644
+index ac44937..e33e0c7 100644
 --- a/configs/orangepi_zero_defconfig
 +++ b/configs/orangepi_zero_defconfig
 @@ -1,6 +1,6 @@
@@ -20,7 +10,7 @@ index 97ef089..c6274c6 100644
  CONFIG_MACH_SUN8I_H3=y
  CONFIG_DRAM_CLK=672
  CONFIG_DRAM_ZQ=3881979
-@@ -9,6 +9,8 @@ CONFIG_DEFAULT_DEVICE_TREE="sun8i-h2-plus-orangepi-zero"
+@@ -9,9 +9,16 @@ CONFIG_DEFAULT_DEVICE_TREE="sun8i-h2-plus-orangepi-zero"
  # CONFIG_SYS_MALLOC_CLEAR_ON_INIT is not set
  CONFIG_CONSOLE_MUX=y
  CONFIG_SPL=y
@@ -29,15 +19,12 @@ index 97ef089..c6274c6 100644
  # CONFIG_CMD_IMLS is not set
  # CONFIG_CMD_FLASH is not set
  # CONFIG_CMD_FPGA is not set
-@@ -16,3 +18,8 @@ CONFIG_SPL_SPI_SUNXI=y
+ CONFIG_SPL_SPI_SUNXI=y
  CONFIG_SUN8I_EMAC=y
  CONFIG_USB_EHCI_HCD=y
- # CONFIG_VIDEO_DE2 is not set
 +CONFIG_DM_SPI_FLASH=y
 +CONFIG_SPI_FLASH=y
-+CONFIG_SPI_FLASH_MACRONIX=y
++CONFIG_SPI_FLASH_WINBOND=y
 +CONFIG_DM_SPI=y
 +CONFIG_SUNXI_SPI=y
--- 
-2.7.4
-
+\ No newline at end of file
