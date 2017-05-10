@@ -47,9 +47,14 @@ prepare:
 uboot:
 	$(MAKE) BR2_EXTERNAL=../$(EXTRA_PATH) -C $(SRC_PATH)/buildroot O=../../$(BUILD_PATH) uboot
 
+uboot_clean:
+	$(MAKE) BR2_EXTERNAL=../$(EXTRA_PATH) -C $(SRC_PATH)/buildroot O=../../$(BUILD_PATH) uboot-dirclean
 
 linux:
 	$(MAKE) BR2_EXTERNAL=../$(EXTRA_PATH) -C $(SRC_PATH)/buildroot O=../../$(BUILD_PATH) linux
+
+linux_clean:
+	$(MAKE) BR2_EXTERNAL=../$(EXTRA_PATH) -C $(SRC_PATH)/buildroot O=../../$(BUILD_PATH) linux-dirclean
 
 linux_config:
 	$(MAKE) BR2_EXTERNAL=../$(EXTRA_PATH) -C $(SRC_PATH)/buildroot O=../../$(BUILD_PATH) linux-menuconfig
@@ -62,6 +67,7 @@ linux_newbuild:
 	rm -rf $(SRC_PATH)/buildroot/dl/`find $(BUILD_PATH)/build/linux-* -maxdepth 0 | grep -v -e headers -e firmware | cut -d "/" -f 3`.tar.gz
 	$(MAKE) BR2_EXTERNAL=../$(EXTRA_PATH) -C $(SRC_PATH)/buildroot O=../../$(BUILD_PATH) linux-dirclean
 	$(MAKE) BR2_EXTERNAL=../$(EXTRA_PATH) -C $(SRC_PATH)/buildroot O=../../$(BUILD_PATH) linux
+
 image:
 	$(MAKE) BR2_EXTERNAL=../$(EXTRA_PATH) -C $(SRC_PATH)/buildroot O=../../$(BUILD_PATH)
 	
@@ -117,18 +123,20 @@ else
 endif
 
 help:
-	# all                        - default rule for build, triggers prepare and buildroot
-	# image                      - filesystem
-	# clean                      - remove filesystem
-	# config                     - start buildroot filesystem menuconfig
-	# defconfig                  - buildroot filesystem default config
-	# savedefconfig              - save buildroot filesystem default config
-	# linux                      - build linux separately
-	# linux_config               - start linux menuconfig
-	# linux_rebuild              - start linux rebuild
-	# linux_newbuild             - start new (clean) linux build
-	# prepare                    - download all required resources
-	# install                    - requires variable DRIVE, prepare partitions on DRIVE
-	# copy                       - requires variable TARGET, mounts TARGET and copy files
-	# update                     - requires variable DRIVE, mounts DRIVE and updates kernel, dtb and modules
-	# uboot                      - build uboot
+	# all                    - default rule for build, triggers prepare and buildroot
+	# image                  - filesystem
+	# clean                  - remove filesystem
+	# config                 - start buildroot filesystem menuconfig
+	# defconfig              - buildroot filesystem default config
+	# savedefconfig          - save buildroot filesystem default config
+	# linux                  - build linux separately
+	# linux_clean            - clean linux
+	# linux_config           - start linux menuconfig
+	# linux_rebuild          - start linux rebuild
+	# linux_newbuild         - start new (clean) linux build
+	# prepare                - download all required resources
+	# install                - requires variable DRIVE, prepare partitions on DRIVE, optional DEPLOY_UBOOT_MBR
+	# copy                   - requires variable TARGET, mounts TARGET and copy files
+	# update                 - requires variable DRIVE, mounts DRIVE and updates kernel, dtb and modules
+	# uboot                  - build uboot
+	# uboot_clean            - clean uboot
