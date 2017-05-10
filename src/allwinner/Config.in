@@ -1,1 +1,2 @@
 source "$BR2_EXTERNAL_ALLWINNER_PATH/package/libuwebsockets/Config.in"
+source "$BR2_EXTERNAL_ALLWINNER_PATH/package/xradio-wlan/Config.in"

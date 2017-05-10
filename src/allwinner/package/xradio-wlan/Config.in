@@ -1,0 +1,10 @@
+comment "xradio-wlan needs a Linux kernel to be built"
+	depends on BR2_arm
+	depends on !BR2_LINUX_KERNEL
+
+config BR2_PACKAGE_XRADIO_WLAN
+	bool "xradio-wlan"
+	depends on BR2_LINUX_KERNEL && BR2_arm
+	select BR2_LINUX_NEEDS_MODULES
+	help
+	  Kernel module for Xradio WiFI. E.g. Orange Pi Zero
