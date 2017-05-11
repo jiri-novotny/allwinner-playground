@@ -1,7 +1,7 @@
-From 1eee2adcd319af6a3e6463299d815f7462a5f64c Mon Sep 17 00:00:00 2001
+From af6015d8c1edcac3caadc6a7151b51c6c4e5613b Mon Sep 17 00:00:00 2001
 From: Jiri Novotny <jiri.novotny@logicelements.cz>
-Date: Wed, 1 Feb 2017 13:48:13 +0100
-Subject: [PATCH] add spi support
+Date: Thu, 11 May 2017 09:57:18 +0200
+Subject: [PATCH 2/4] add spi and flash node
 
 Signed-off-by: Jiri Novotny <jiri.novotny@logicelements.cz>
 ---

@@ -1,0 +1,25 @@
+From e6a1a461a8013f44db9e85d8a8705e554a9a4bb2 Mon Sep 17 00:00:00 2001
+From: Jiri Novotny <jiri.novotny@logicelements.cz>
+Date: Thu, 11 May 2017 10:41:01 +0200
+Subject: [PATCH] add compatible string for RF to spidev driver
+
+Signed-off-by: Jiri Novotny <jiri.novotny@logicelements.cz>
+---
+ drivers/spi/spidev.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/spi/spidev.c b/drivers/spi/spidev.c
+index 9e2e099..df14dec 100644
+--- a/drivers/spi/spidev.c
++++ b/drivers/spi/spidev.c
+@@ -697,6 +697,7 @@ static const struct of_device_id spidev_dt_ids[] = {
+ 	{ .compatible = "rohm,dh2228fv" },
+ 	{ .compatible = "lineartechnology,ltc2488" },
+ 	{ .compatible = "ge,achc" },
++  { .compatible = "hoperf,rfm7x" },
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(of, spidev_dt_ids);
+-- 
+2.7.4
+
