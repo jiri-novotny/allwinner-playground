@@ -5,11 +5,11 @@
 ###############################################################################
 
 # you can set buildroot source
-BUILDROOT_USE_GIT=1
+BUILDROOT_USE_GIT=0
 # you can set buildroot git version (branch or tag)
 BUILDROOT_BRANCH=master
 # you can set buildroot static version
-BUILDROOT_RELEASE=buildroot-2017.02.2
+BUILDROOT_RELEASE=buildroot-2017.05-rc1
 
 # you current project name
 CURRENT_PROJECT?=h2zero
