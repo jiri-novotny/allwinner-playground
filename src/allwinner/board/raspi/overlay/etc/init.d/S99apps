@@ -1,0 +1,68 @@
+#!/bin/sh
+
+USE_WIFI=0
+
+start() {
+  echo "Starting apps..."
+
+  if [ $USE_WIFI -eq 0 ]; then
+    IFACE=eth
+    # wait for network
+    sleep 1
+    # start network
+    ifup eth0
+  else
+    IFACE=wlan
+    # wait for network
+    sleep 2
+    # start wpa
+    wpa_supplicant -c /etc/wpa_supplicant.conf -B -D nl80211 -i wlan0
+    # start network
+    ifup wlan0
+  fi
+
+  # set time
+  if [ `ip a | grep inet | wc -l` -gt 1 ]; then
+    echo "Configuring date..."
+    ntpd -q -p ntp.cesnet.cz
+  else
+    echo "No IP, skipping date config..."
+  fi
+
+  # start cron
+  mkdir -p /var/spool/cron/crontabs
+  cp /etc/crond/* /var/spool/cron/crontabs
+  crond
+}
+
+stop() {
+  ifdown -a
+  if [ $USE_WIFI -eq 1 ]; then
+    killall wpa_supplicant
+  fi
+  killall crond
+  rm -rf /var/spool/cron
+}
+
+restart() {
+  stop
+  sleep 1
+  start
+}
+
+case "$1" in
+  start)
+    start
+  ;;
+  stop)
+    stop
+  ;;
+  restart|reload)
+    restart
+  ;;
+  *)
+    echo "Usage: $0 {start|restart|stop}"
+    exit 1
+esac
+
+exit $?

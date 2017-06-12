@@ -6,3 +6,4 @@ src/allwinner/board/a13som-audio/overlay/etc/wpa_supplicant.conf
 src/allwinner/board/a13som-audio/overlay/root/
 /a13som_audio/
 /h2zero/
+/raspi/

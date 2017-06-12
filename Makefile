@@ -9,7 +9,7 @@ BUILDROOT_USE_GIT=0
 # you can set buildroot git version (branch or tag)
 BUILDROOT_BRANCH=master
 # you can set buildroot static version
-BUILDROOT_RELEASE=buildroot-2017.05-rc1
+BUILDROOT_RELEASE=buildroot-2017.05
 
 # you current project name
 CURRENT_PROJECT?=h2zero
@@ -122,6 +122,13 @@ else
 	$(info Define TARGET variable (e.g. TARGET=/mnt/))
 endif
 
+projects:
+	# a13som_audio           - audio server on Olimex A13 SoM
+	# h2zero                 - Orange Pi Zero testing image
+	# raspi                  - Raspberry Pi 3 testing image
+	#
+	# Usage: CURRENT_PROJECT=h2zero make
+
 help:
 	# all                    - default rule for build, triggers prepare and buildroot
 	# image                  - filesystem
@@ -135,6 +142,7 @@ help:
 	# linux_rebuild          - start linux rebuild
 	# linux_newbuild         - start new (clean) linux build
 	# prepare                - download all required resources
+	# projects				 - list supported projects
 	# install                - requires variable DRIVE, prepare partitions on DRIVE, optional DEPLOY_UBOOT_MBR
 	# copy                   - requires variable TARGET, mounts TARGET and copy files
 	# update                 - requires variable DRIVE, mounts DRIVE and updates kernel, dtb and modules
