@@ -12,8 +12,8 @@ BUILDROOT_BRANCH=master
 BUILDROOT_RELEASE=buildroot-2017.05
 
 # you current project name
-CURRENT_PROJECT?=h2zero
-CURRENT_DEFCONFIG?=$(CURRENT_PROJECT)_defconfig
+PROJECT?=h2zero
+DEFCONFIG?=$(PROJECT)_defconfig
 DEPLOY_UBOOT_MBR?=0
 
 # you can modify paths for target deployment
@@ -24,7 +24,7 @@ BUILDROOT_GIT=git://git.buildroot.net/buildroot
 BUILDROOT_URL=https://buildroot.org/downloads/$(BUILDROOT_RELEASE).tar.gz
 
 # dont edit after this line
-BUILD_PATH=$(CURRENT_PROJECT)
+BUILD_PATH=$(PROJECT)
 EXTRA_PATH=allwinner
 SRC_PATH=src
 
@@ -75,7 +75,7 @@ config:
 	$(MAKE) BR2_EXTERNAL=../$(EXTRA_PATH) -C $(SRC_PATH)/buildroot O=../../$(BUILD_PATH) menuconfig
 	
 defconfig:
-	$(MAKE) BR2_EXTERNAL=../$(EXTRA_PATH) -C $(SRC_PATH)/buildroot O=../../$(BUILD_PATH) $(CURRENT_DEFCONFIG)
+	$(MAKE) BR2_EXTERNAL=../$(EXTRA_PATH) -C $(SRC_PATH)/buildroot O=../../$(BUILD_PATH) $(DEFCONFIG)
 
 savedefconfig:
 	$(MAKE) BR2_EXTERNAL=../$(EXTRA_PATH) -C $(SRC_PATH)/buildroot O=../../$(BUILD_PATH) savedefconfig
@@ -116,8 +116,8 @@ endif
 
 copy: prepare image
 ifdef TARGET
-	if [ ! -d $(TARGET)/$(PROJECT_NAME) ]; then sudo mkdir $(TARGET)/$(PROJECT_NAME); fi
-	sudo cp $(BUILD_PATH)/images/* $(TARGET)/$(PROJECT_NAME)
+	if [ ! -d $(TARGET)/$(PROJECT) ]; then sudo mkdir $(TARGET)/$(PROJECT); fi
+	sudo cp $(BUILD_PATH)/images/* $(TARGET)/$(PROJECT)
 else
 	$(info Define TARGET variable (e.g. TARGET=/mnt/))
 endif
@@ -127,7 +127,7 @@ projects:
 	# h2zero                 - Orange Pi Zero testing image
 	# raspi                  - Raspberry Pi 3 testing image
 	#
-	# Usage: CURRENT_PROJECT=h2zero make
+	# Usage: PROJECT=h2zero make
 
 help:
 	# all                    - default rule for build, triggers prepare and buildroot
