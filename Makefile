@@ -9,7 +9,7 @@ BUILDROOT_USE_GIT=0
 # you can set buildroot git version (branch or tag)
 BUILDROOT_BRANCH=master
 # you can set buildroot static version
-BUILDROOT_RELEASE=buildroot-2017.05
+BUILDROOT_RELEASE=buildroot-2017.05.2
 
 # you current project name
 PROJECT?=h2zero
@@ -22,6 +22,8 @@ MOUNT_PATH=/mnt
 # you probably dont want to change buildroot source url
 BUILDROOT_GIT=git://git.buildroot.net/buildroot
 BUILDROOT_URL=https://buildroot.org/downloads/$(BUILDROOT_RELEASE).tar.gz
+TOOLCHAIN_RELEASE=gcc-linaro-5.4.1-2017.05-x86_64_arm-linux-gnueabihf
+TOOLCHAIN_URL=https://releases.linaro.org/components/toolchain/binaries/5.4-2017.05/arm-linux-gnueabihf/$(TOOLCHAIN_RELEASE).tar.xz
 
 # dont edit after this line
 BUILD_PATH=$(PROJECT)
@@ -31,7 +33,7 @@ SRC_PATH=src
 .PHONY: prepare
 
 # Do not build "linux" by default since it is already built as part of Buildroot
-all: prepare defconfig image
+all: prepare toolchain defconfig image
 
 prepare:
 	if [ ! -d $(SRC_PATH)/buildroot ]; then \
@@ -42,6 +44,13 @@ prepare:
 		else \
 			git clone -b $(BUILDROOT_BRANCH) $(BUILDROOT_GIT) $(SRC_PATH)/buildroot; \
 		fi; \
+	fi
+
+toolchain:
+	if [ ! -d $(SRC_PATH)/toolchain ]; then \
+		wget -O /tmp/toolchain.tar.xz $(TOOLCHAIN_URL); \
+		tar xf /tmp/toolchain.tar.xz -C /tmp; \
+		mv /tmp/$(TOOLCHAIN_RELEASE) $(SRC_PATH)/toolchain; \
 	fi
 
 uboot:
@@ -58,7 +67,7 @@ linux_clean:
 
 linux_config:
 	$(MAKE) BR2_EXTERNAL=../$(EXTRA_PATH) -C $(SRC_PATH)/buildroot O=../../$(BUILD_PATH) linux-menuconfig
-	cp $(BUILD_PATH)/build/`find $(BUILD_PATH)/build/linux-* -maxdepth 0 | grep -v -e headers -e firmware | cut -d "/" -f 3`/.config $(SRC_PATH)/$(EXTRA_PATH)/board/$(CURRENT_PROJECT)/kernel.cfg
+	cp $(BUILD_PATH)/build/`find $(BUILD_PATH)/build/linux-* -maxdepth 0 | grep -v -e headers -e firmware | cut -d "/" -f 3`/.config $(SRC_PATH)/$(EXTRA_PATH)/board/$(PROJECT)/kernel.cfg
 
 linux_rebuild:
 	$(MAKE) BR2_EXTERNAL=../$(EXTRA_PATH) -C $(SRC_PATH)/buildroot O=../../$(BUILD_PATH) linux-rebuild
@@ -82,6 +91,13 @@ savedefconfig:
 
 clean:
 	$(MAKE) BR2_EXTERNAL=../$(EXTRA_PATH) -C $(SRC_PATH)/buildroot O=../../$(BUILD_PATH) clean
+
+distclean:
+	rm -rf `find . -maxdepth 1 ! -path . -type d | grep -v -e Makefile -e README -e $(SRC_PATH) -e .git`
+
+mrproper: distclean
+	rm -rf $(SRC_PATH)/toolchain
+	rm -rf $(SRC_PATH)/buildroot
 
 install: prepare image
 ifdef DRIVE

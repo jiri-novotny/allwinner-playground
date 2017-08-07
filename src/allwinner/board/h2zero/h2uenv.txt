@@ -28,10 +28,8 @@ setenv scan_dev_for_extlinux
 setenv scan_dev_for_scripts
 setenv scriptaddr
 setenv usb_boot
-setenv bootdelay 1
 setenv bootfile zImage
 setenv fdt_high ffffffff
-setenv mtdparts "mtdparts=spi32766.0:512k(uboot),512k(dtb),5M(kernel),-(rootfs)"
 setenv mmcargs 'setenv bootargs "console=${console} root=/dev/mmcblk0p1 rw rootwait rootfstype=ext4 ${mtdparts}"'
 setenv mmcload 'mmc rescan; load mmc 0 ${kernel_addr_r} /boot/${bootfile}; load mmc 0 ${fdt_addr_r} /boot/${fdtfile};'
 setenv doboot 'bootz ${kernel_addr_r} - ${fdt_addr_r}'

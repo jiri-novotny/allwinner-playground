@@ -16,9 +16,9 @@ index 9e2e099..df14dec 100644
  	{ .compatible = "rohm,dh2228fv" },
  	{ .compatible = "lineartechnology,ltc2488" },
  	{ .compatible = "ge,achc" },
-+  { .compatible = "hoperf,rfm7x" },
++	{ .compatible = "hoperf,rfm7x" },
+ 	{ .compatible = "semtech,sx1301" },
  	{},
- };
  MODULE_DEVICE_TABLE(of, spidev_dt_ids);
 -- 
 2.7.4

@@ -1,4 +1,5 @@
 src/buildroot/
+src/toolchain/
 src/linux*/
 src/u-boot*/
 src/uboot*/

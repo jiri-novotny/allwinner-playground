@@ -23,7 +23,7 @@ index b7ca916..2f25026 100644
 +	flash: m25p80@0 {
 +		#address-cells = <1>;
 +		#size-cells = <1>;
-+		compatible = "winbond,w25q128";
++		compatible = "jedec,spi-nor";
 +		reg = <0>;
 +		spi-max-frequency = <40000000>;
 +	};
