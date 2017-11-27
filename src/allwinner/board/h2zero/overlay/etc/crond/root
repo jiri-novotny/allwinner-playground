@@ -1,2 +1,0 @@
-# m h  dom mon dow   command
-0 0 * * * /usr/bin/ntpd -q -p ntp.cesnet.cz

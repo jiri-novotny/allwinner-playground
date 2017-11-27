@@ -1,0 +1,3 @@
+source "$BR2_EXTERNAL_EXTRAS_PATH/package/dotnet-runtime/Config.in"
+source "$BR2_EXTERNAL_EXTRAS_PATH/package/libuwebsockets/Config.in"
+source "$BR2_EXTERNAL_EXTRAS_PATH/package/xradio-wlan/Config.in"

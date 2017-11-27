@@ -9,10 +9,10 @@ BUILDROOT_USE_GIT=0
 # you can set buildroot git version (branch or tag)
 BUILDROOT_BRANCH=master
 # you can set buildroot static version
-BUILDROOT_RELEASE=buildroot-2017.05.2
+BUILDROOT_RELEASE=buildroot-2017.08.1
 
 # you current project name
-PROJECT?=h2zero
+PROJECT?=mxsystem
 DEFCONFIG?=$(PROJECT)_defconfig
 DEPLOY_UBOOT_MBR?=0
 
@@ -24,10 +24,12 @@ BUILDROOT_GIT=git://git.buildroot.net/buildroot
 BUILDROOT_URL=https://buildroot.org/downloads/$(BUILDROOT_RELEASE).tar.gz
 TOOLCHAIN_RELEASE=gcc-linaro-5.4.1-2017.05-x86_64_arm-linux-gnueabihf
 TOOLCHAIN_URL=https://releases.linaro.org/components/toolchain/binaries/5.4-2017.05/arm-linux-gnueabihf/$(TOOLCHAIN_RELEASE).tar.xz
+TOOLCHAIN64_RELEASE=gcc-linaro-5.4.1-2017.05-i686_aarch64-linux-gnu
+TOOLCHAIN64_URL=https://releases.linaro.org/components/toolchain/binaries/5.4-2017.05/aarch64-linux-gnu/$(TOOLCHAIN64_RELEASE).tar.xz
 
 # dont edit after this line
 BUILD_PATH=$(PROJECT)
-EXTRA_PATH=allwinner
+EXTRA_PATH=extra
 SRC_PATH=src
 
 .PHONY: prepare
@@ -51,6 +53,13 @@ toolchain:
 		wget -O /tmp/toolchain.tar.xz $(TOOLCHAIN_URL); \
 		tar xf /tmp/toolchain.tar.xz -C /tmp; \
 		mv /tmp/$(TOOLCHAIN_RELEASE) $(SRC_PATH)/toolchain; \
+	fi
+
+toolchain64:
+	if [ ! -d $(SRC_PATH)/toolchain64 ]; then \
+		wget -O /tmp/toolchain64.tar.xz $(TOOLCHAIN64_URL); \
+		tar xf /tmp/toolchain64.tar.xz -C /tmp; \
+		mv /tmp/$(TOOLCHAIN64_RELEASE) $(SRC_PATH)/toolchain64; \
 	fi
 
 uboot:
@@ -97,6 +106,7 @@ distclean:
 
 mrproper: distclean
 	rm -rf $(SRC_PATH)/toolchain
+	rm -rf $(SRC_PATH)/toolchain64
 	rm -rf $(SRC_PATH)/buildroot
 
 install: prepare image
@@ -130,6 +140,19 @@ else
 	$(info Define DRIVE variable (e.g. DRIVE=/dev/sdc))
 endif
 
+deploymx: image
+ifdef DRIVE
+	sudo mkfs.ext4 -F -L rootfs $(DRIVE)1
+	sudo mount $(DRIVE)1 $(MOUNT_PATH)
+	sudo tar -xf $(BUILD_PATH)/images/rootfs.tar -C $(MOUNT_PATH)
+	sudo mkdir $(MOUNT_PATH)/boot
+	sudo cp $(BUILD_PATH)/images/zImage $(MOUNT_PATH)/boot
+	sudo cp $(BUILD_PATH)/images/*.dtb $(MOUNT_PATH)/boot
+	sudo umount $(MOUNT_PATH)
+else
+	$(info Define DRIVE variable (e.g. DRIVE=/dev/sdc))
+endif
+
 copy: prepare image
 ifdef TARGET
 	if [ ! -d $(TARGET)/$(PROJECT) ]; then sudo mkdir $(TARGET)/$(PROJECT); fi
@@ -140,7 +163,9 @@ endif
 
 projects:
 	# a13som_audio           - audio server on Olimex A13 SoM
+	# espresso               - Marvell EspressoBin testing image
 	# h2zero                 - Orange Pi Zero testing image
+	# mxsystem               - MX testing image
 	# raspi                  - Raspberry Pi 3 testing image
 	#
 	# Usage: PROJECT=h2zero make

@@ -1,0 +1,43 @@
+#!/bin/sh
+
+SLEEP_TIME=2
+
+case $1 in
+  bbc1)
+    VAR=http://bbcmedia.ic.llnwd.net/stream/bbcmedia_radio1_mf_p
+  ;;
+  bbc2)
+    VAR=http://bbcmedia.ic.llnwd.net/stream/bbcmedia_radio2_mf_p
+    SLEEP_TIME=6
+  ;;
+  cro1)
+    VAR=http://icecast8.play.cz/cro1-128.mp3
+  ;;
+  cro2)
+    VAR=http://icecast6.play.cz/cro2-128.mp3
+  ;;
+  none)
+    VAR=none
+  ;;
+  file)
+    VAR=$2
+  ;;
+  *)
+    echo "USAGE: radio [station_name]"
+    echo "  where [station_name] is bbc1, bbc2, cro1, cro2, none"
+    exit
+  ;;
+esac
+
+if [ ! $VAR == "none" ]; then
+  echo "stop" > /tmp/mplayer.fifo
+  echo "loadfile $VAR" > /tmp/mplayer.fifo
+  sleep ${SLEEP_TIME}
+  amixer sset 'Left Mixer Left DAC',0 off  > /dev/null 2> /dev/null &
+  amixer sset 'Right Mixer Right DAC',0 off > /dev/null 2> /dev/null &
+else
+  amixer sset 'Left Mixer Left DAC',0 on > /dev/null 2> /dev/null &
+  amixer sset 'Right Mixer Right DAC',0 on > /dev/null 2> /dev/null &
+  echo "stop" > /tmp/mplayer.fifo
+  echo "loadfile http://icecast8.play.cz/cro1-128.mp3" > /tmp/mplayer.fifo
+fi

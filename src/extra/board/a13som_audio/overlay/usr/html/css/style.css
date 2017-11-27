@@ -1,0 +1,22 @@
+.center {
+  text-align: center;
+}
+
+input {
+  width: 33vw;
+  height: 10vh;
+  font-size: 4vw;
+  font-weight: bold;
+}
+
+div {
+  padding-bottom: 2vh;
+}
+
+#status {
+  font-size: 3vw;
+}
+
+#light {
+  font-size: 3vw;
+}

@@ -1,0 +1,422 @@
+diff --git a/arch/arm/dts/Makefile b/arch/arm/dts/Makefile
+index 836a8c4..7182da6 100644
+--- a/arch/arm/dts/Makefile
++++ b/arch/arm/dts/Makefile
+@@ -193,6 +193,7 @@ dtb-$(CONFIG_MACH_SUN5I) += \
+ 	sun5i-a13-hsg-h702.dtb \
+ 	sun5i-a13-inet-86vs.dtb \
+ 	sun5i-a13-inet-98v-rev2.dtb \
++	sun5i-a13-olimex-som-bpl.dtb \
+ 	sun5i-a13-olinuxino.dtb \
+ 	sun5i-a13-olinuxino-micro.dtb \
+ 	sun5i-a13-q8-tablet.dtb \
+diff --git a/arch/arm/dts/sun5i-a13-olimex-som-bpl.dts b/arch/arm/dts/sun5i-a13-olimex-som-bpl.dts
+new file mode 100644
+index 0000000..0a9b45a
+--- /dev/null
++++ b/arch/arm/dts/sun5i-a13-olimex-som-bpl.dts
+@@ -0,0 +1,310 @@
++/*
++ * Copyright 2012 Jiri Novotny
++ *
++ * Jiri Novotny <jiri.novotny@logicelements.cz>
++ *
++ * This file is dual-licensed: you can use it either under the terms
++ * of the GPL or the X11 license, at your option. Note that this dual
++ * licensing only applies to this file, and not this project as a
++ * whole.
++ *
++ *  a) This file is free software; you can redistribute it and/or
++ *     modify it under the terms of the GNU General Public License as
++ *     published by the Free Software Foundation; either version 2 of the
++ *     License, or (at your option) any later version.
++ *
++ *     This file is distributed in the hope that it will be useful,
++ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *     GNU General Public License for more details.
++ *
++ * Or, alternatively,
++ *
++ *  b) Permission is hereby granted, free of charge, to any person
++ *     obtaining a copy of this software and associated documentation
++ *     files (the "Software"), to deal in the Software without
++ *     restriction, including without limitation the rights to use,
++ *     copy, modify, merge, publish, distribute, sublicense, and/or
++ *     sell copies of the Software, and to permit persons to whom the
++ *     Software is furnished to do so, subject to the following
++ *     conditions:
++ *
++ *     The above copyright notice and this permission notice shall be
++ *     included in all copies or substantial portions of the Software.
++ *
++ *     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ *     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
++ *     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
++ *     NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
++ *     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
++ *     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
++ *     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
++ *     OTHER DEALINGS IN THE SOFTWARE.
++ */
++
++/dts-v1/;
++#include "sun5i-a13.dtsi"
++
++#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/input/input.h>
++#include <dt-bindings/pinctrl/sun4i-a10.h>
++
++/ {
++	model = "Olimex A13 SoM";
++	compatible = "olimex,a13-som", "allwinner,sun5i-a13";
++
++	aliases {
++		serial0 = &uart1;
++	};
++
++	chosen {
++		stdout-path = "serial0:115200n8";
++	};
++
++	leds {
++		compatible = "gpio-leds";
++		pinctrl-names = "default";
++		pinctrl-0 = <&led_pins>;
++
++		power {
++			gpios = <&pio 6 9 GPIO_ACTIVE_HIGH>;
++			default-state = "on";
++		};
++	};
++
++	vin: fixedregulator@0 {
++		compatible = "regulator-fixed";
++		regulator-name = "vinput";
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++		regulator-always-on;
++	};
++
++	vsys: fixedregulator@0 {
++		compatible = "regulator-fixed";
++		regulator-name = "vsys";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		regulator-always-on;
++	};
++
++	vanalog: fixedregulator@0 {
++		compatible = "regulator-fixed";
++		regulator-name = "vanalog";
++		regulator-min-microvolt = <3000000>;
++		regulator-max-microvolt = <3000000>;
++		regulator-always-on;
++	};
++};
++
++&i2c0 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&i2c0_pins_a>;
++	status = "okay";
++};
++
++&i2c1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&i2c1_pins_a>;
++	status = "okay";
++
++	lm75@48 {
++		compatible = "national,lm75";
++		reg = <0x48>;
++	};
++
++	at24@50 {
++		compatible = "at,24c02";
++		reg = <0x50>;
++	};
++};
++
++&i2c2 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&i2c2_pins_a>;
++	status = "okay";
++};
++
++&spi2 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&spi2_pins_a>, <&spi2_cs0_pins_a>;
++	status = "okay";
++
++	#address-cells = <1>;
++	#size-cells = <0>;
++	radio@0 {
++		compatible = "hoperf,rfm7x";
++		spi-max-frequency = <8000000>;
++		reg = <0>;
++	};
++};
++
++&lradc {
++	vref-supply = <&vanalog>;
++	status = "okay";
++
++	button@191 {
++		label = "Volume Up";
++		linux,code = <KEY_VOLUMEUP>;
++		channel = <0>;
++		voltage = <191000>;
++	};
++
++	button@391 {
++		label = "Volume Down";
++		linux,code = <KEY_VOLUMEDOWN>;
++		channel = <0>;
++		voltage = <391000>;
++	};
++
++	button@987 {
++		label = "Home";
++		linux,code = <KEY_HOMEPAGE>;
++		channel = <0>;
++		voltage = <987387>;
++	};
++};
++
++&codec {
++	status = "okay";
++};
++
++&mmc0 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&mmc0_pins_a>, <&mmc0_cd_pin>;
++	vmmc-supply = <&vsys>;
++	bus-width = <4>;
++	cd-gpios = <&pio 6 0 GPIO_ACTIVE_HIGH>; /* PG0 */
++	cd-inverted;
++	status = "okay";
++};
++
++&pio {
++	mmc0_cd_pin: mmc0_cd_pin@0 {
++		allwinner,pins = "PG0";
++		allwinner,function = "gpio_in";
++		allwinner,drive = <SUN4I_PINCTRL_10_MA>;
++		allwinner,pull = <SUN4I_PINCTRL_PULL_UP>;
++	};
++
++	led_pins: led_pins@0 {
++		allwinner,pins = "PG9";
++		allwinner,function = "gpio_out";
++		allwinner,drive = <SUN4I_PINCTRL_20_MA>;
++		allwinner,pull = <SUN4I_PINCTRL_NO_PULL>;
++	};
++
++	usb0_id_detect_pin: usb0_id_detect_pin@0 {
++		allwinner,pins = "PG12";
++		allwinner,function = "gpio_in";
++		allwinner,drive = <SUN4I_PINCTRL_10_MA>;
++		allwinner,pull = <SUN4I_PINCTRL_PULL_UP>;
++	};
++
++	usb0_vbus_detect_pin: usb0_vbus_detect_pin@0 {
++		allwinner,pins = "PB4";
++		allwinner,function = "gpio_in";
++		allwinner,drive = <SUN4I_PINCTRL_10_MA>;
++		allwinner,pull = <SUN4I_PINCTRL_PULL_DOWN>;
++	};
++
++	rfm_ce_pin: rfm_ce_pin@0 {
++		allwinner,pins = "PG1";
++		allwinner,function = "gpio_out";
++		allwinner,drive = <SUN4I_PINCTRL_10_MA>;
++		allwinner,pull = <SUN4I_PINCTRL_PULL_DOWN>;
++	};
++
++	rfm_irq_pin: rfm_irq_pin@0 {
++		allwinner,pins = "PB10";
++		allwinner,function = "gpio_in";
++		allwinner,drive = <SUN4I_PINCTRL_10_MA>;
++		allwinner,pull = <SUN4I_PINCTRL_PULL_DOWN>;
++	};
++
++	spi2_pins_a: spi2@0 {
++		allwinner,pins = "PE1", "PE2", "PE3";
++		allwinner,function = "spi2";
++		allwinner,drive = <SUN4I_PINCTRL_10_MA>;
++		allwinner,pull = <SUN4I_PINCTRL_NO_PULL>;
++	};
++
++	spi2_cs0_pins_a: spi2_cs0@0 {
++		allwinner,pins = "PE0";
++		allwinner,function = "spi2";
++		allwinner,drive = <SUN4I_PINCTRL_10_MA>;
++		allwinner,pull = <SUN4I_PINCTRL_NO_PULL>;
++	};
++
++	nand_pins_a: nand_pins@0 {
++		allwinner,pins = "PC0", "PC1", "PC2", "PC5",
++				"PC8", "PC9", "PC10", "PC11",
++				"PC12", "PC13", "PC14", "PC15";
++		allwinner,function = "nand0";
++		allwinner,drive = <SUN4I_PINCTRL_10_MA>;
++		allwinner,pull = <SUN4I_PINCTRL_NO_PULL>;
++	};
++
++	nand_cs0_pins_a: nand_cs0@0 {
++		allwinner,pins = "PC4";
++		allwinner,function = "nand0";
++		allwinner,drive = <SUN4I_PINCTRL_10_MA>;
++		allwinner,pull = <SUN4I_PINCTRL_NO_PULL>;
++	};
++
++	nand_rb0_pins_a: nand_rb0@0 {
++		allwinner,pins = "PC6";
++		allwinner,function = "nand0";
++		allwinner,drive = <SUN4I_PINCTRL_10_MA>;
++		allwinner,pull = <SUN4I_PINCTRL_NO_PULL>;
++	};
++};
++
++&uart1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&uart1_pins_b>;
++	status = "okay";
++};
++
++&ohci0 {
++	status = "okay";
++};
++
++&ehci0 {
++	status = "okay";
++};
++
++&usb_otg {
++	status = "okay";
++	dr_mode = "otg";
++};
++
++&otg_sram {
++	status = "okay";
++};
++
++&usbphy {
++	pinctrl-names = "default";
++	pinctrl-0 = <&usb0_id_detect_pin>, <&usb0_vbus_detect_pin>;
++	usb0_id_det-gpio = <&pio 6 12 GPIO_ACTIVE_HIGH>; /* PG12 */
++	usb0_vbus_det-gpio = <&pio 1 4 GPIO_ACTIVE_HIGH>; /* PB4 */
++	usb0_vbus-supply = <&vin>;
++	usb1_vbus-supply = <&vin>;
++	status = "okay";
++};
++
++&nfc {
++	pinctrl-names = "default";
++	pinctrl-0 = <&nand_pins_a>, <&nand_cs0_pins_a>, <&nand_rb0_pins_a>;
++	status = "okay";
++
++	nand@0 {
++		#address-cells = <2>;
++		#size-cells = <2>;
++		reg = <0>;
++		allwinner,rb = <0>;
++
++		nand-ecc-mode = "hw";
++		nand-on-flash-bbt;
++	};
++};
+diff --git a/arch/arm/dts/sun5i-a13-utoo-p66.dts b/arch/arm/dts/sun5i-a13-utoo-p66.dts
+index a8b0bcc..b7ead1a 100644
+--- a/arch/arm/dts/sun5i-a13-utoo-p66.dts
++++ b/arch/arm/dts/sun5i-a13-utoo-p66.dts
+@@ -129,6 +129,14 @@
+ 		allwinner,pull = <SUN4I_PINCTRL_NO_PULL>;
+ 	};
+ 
++	mmc2_pins_a: mmc2@0 {
++		allwinner,pins = "PC6", "PC7", "PC8", "PC9",
++		"PC10", "PC11", "PC12", "PC13",
++		"PC14", "PC15";
++		allwinner,function = "mmc2";
++		allwinner,drive = <SUN4I_PINCTRL_30_MA>;
++		allwinner,pull = <SUN4I_PINCTRL_PULL_UP>;
++	};
+ };
+ 
+ &reg_usb0_vbus {
+diff --git a/arch/arm/dts/sun5i-a13.dtsi b/arch/arm/dts/sun5i-a13.dtsi
+index e012890..a17ba02 100644
+--- a/arch/arm/dts/sun5i-a13.dtsi
++++ b/arch/arm/dts/sun5i-a13.dtsi
+@@ -84,7 +84,7 @@
+ 			trips {
+ 				cpu_alert0: cpu_alert0 {
+ 					/* milliCelsius */
+-					temperature = <850000>;
++					temperature = <85000>;
+ 					hysteresis = <2000>;
+ 					type = "passive";
+ 				};
+diff --git a/arch/arm/dts/sun5i.dtsi b/arch/arm/dts/sun5i.dtsi
+index e374f4f..645367b 100644
+--- a/arch/arm/dts/sun5i.dtsi
++++ b/arch/arm/dts/sun5i.dtsi
+@@ -399,6 +399,19 @@
+ 			#dma-cells = <2>;
+ 		};
+ 
++		nfc: nand@01c03000 {
++			compatible = "allwinner,sun4i-a10-nand";
++			reg = <0x01c03000 0x1000>;
++			interrupts = <37>;
++			clocks = <&ahb_gates 13>, <&nand_clk>;
++			clock-names = "ahb", "mod";
++			dmas = <&dma SUN4I_DMA_DEDICATED 3>;
++			dma-names = "rxtx";
++			status = "disabled";
++			#address-cells = <1>;
++			#size-cells = <0>;
++		};
++
+ 		spi0: spi@01c05000 {
+ 			compatible = "allwinner,sun4i-a10-spi";
+ 			reg = <0x01c05000 0x1000>;
+@@ -582,15 +595,6 @@
+ 				allwinner,pull = <SUN4I_PINCTRL_NO_PULL>;
+ 			};
+ 
+-			mmc2_pins_a: mmc2@0 {
+-				allwinner,pins = "PC6", "PC7", "PC8", "PC9",
+-					"PC10", "PC11", "PC12", "PC13",
+-					"PC14", "PC15";
+-				allwinner,function = "mmc2";
+-				allwinner,drive = <SUN4I_PINCTRL_30_MA>;
+-				allwinner,pull = <SUN4I_PINCTRL_PULL_UP>;
+-			};
+-
+ 			uart3_pins_a: uart3@0 {
+ 				allwinner,pins = "PG9", "PG10";
+ 				allwinner,function = "uart3";
+diff --git a/configs/A13-som_defconfig b/configs/A13-som_defconfig
+new file mode 100644
+index 0000000..485d90a
+--- /dev/null
++++ b/configs/A13-som_defconfig
+@@ -0,0 +1,16 @@
++CONFIG_ARM=y
++CONFIG_ARCH_SUNXI=y
++CONFIG_MACH_SUN5I=y
++CONFIG_DRAM_CLK=408
++CONFIG_DRAM_EMR1=0
++CONFIG_MMC0_CD_PIN="PG0"
++# CONFIG_USB1_VBUS_PIN="PG11"
++CONFIG_DEFAULT_DEVICE_TREE="sun5i-a13-olimex-som-bpl"
++# CONFIG_SYS_MALLOC_CLEAR_ON_INIT is not set
++CONFIG_SYS_EXTRA_OPTIONS="CONS_INDEX=2"
++CONFIG_SPL=y
++# CONFIG_CMD_IMLS is not set
++# CONFIG_CMD_FLASH is not set
++# CONFIG_CMD_FPGA is not set
++CONFIG_SUNXI_NO_PMIC=y
++CONFIG_USB_EHCI_HCD=y

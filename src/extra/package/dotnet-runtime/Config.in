@@ -1,0 +1,15 @@
+config BR2_PACKAGE_DOTNET_RUNTIME
+	bool "dotnet-runtime"
+  select BR2_PACKAGE_GETTEXT
+  select BR2_PACKAGE_ICU
+  select BR2_PACKAGE_LIBCURL
+  select BR2_PACKAGE_LIBUNWIND
+  select BR2_PACKAGE_LTTNG_UST
+  select BR2_PACKAGE_OPENSSL
+	depends on BR2_TOOLCHAIN_HAS_THREADS
+  depends on BR2_arm
+	help
+	  dot net core runtime
+
+comment "dotnet-runtime needs a toolchain w/ threads"
+	depends on !BR2_TOOLCHAIN_HAS_THREADS

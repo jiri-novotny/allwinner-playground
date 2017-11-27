@@ -1,0 +1,38 @@
+setenv preboot
+setenv boot_a_script
+setenv boot_efi_binary
+setenv boot_extlinux
+setenv boot_net_usb_start
+setenv boot_prefixes
+setenv boot_script_dhcp
+setenv boot_scripts
+setenv boot_targets
+setenv bootcmd_dhcp
+setenv bootcmd_fel
+setenv bootcmd_mmc0
+setenv bootcmd_pxe
+setenv bootcmd_usb0
+setenv bootm_size
+setenv dfu_alt_info_ram
+setenv distro_bootcmd
+setenv efi_dtb_prefixes
+setenv fdtcontroladdr
+setenv load_efi_dtb
+setenv mmc_boot
+setenv pxefile_addr_r
+setenv ramdisk_addr_r
+setenv scan_dev_for_boot
+setenv scan_dev_for_boot_part
+setenv scan_dev_for_efi
+setenv scan_dev_for_extlinux
+setenv scan_dev_for_scripts
+setenv scriptaddr
+setenv usb_boot
+setenv bootdelay 1
+setenv bootfile zImage
+setenv fdt_high ffffffff
+setenv mtdparts "mtdparts=1c03000.nand:1M(uboot),1M(dtb),6M(kernel),-(rootfs)"
+setenv mmcargs 'setenv bootargs "console=${console} root=/dev/mmcblk0p1 rw rootwait rootfstype=ext4 ${mtdparts}"'
+setenv mmcload 'mmc rescan; load mmc 0 ${kernel_addr_r} /boot/${bootfile}; load mmc 0 ${fdt_addr_r} /boot/${fdtfile};'
+setenv doboot 'bootz ${kernel_addr_r} - ${fdt_addr_r}'
+setenv bootcmd 'run mmcargs; run mmcload; run doboot;'
