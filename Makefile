@@ -22,10 +22,10 @@ MOUNT_PATH=/mnt
 # you probably dont want to change buildroot source url
 BUILDROOT_GIT=git://git.buildroot.net/buildroot
 BUILDROOT_URL=https://buildroot.org/downloads/$(BUILDROOT_RELEASE).tar.gz
-TOOLCHAIN_RELEASE=gcc-linaro-5.4.1-2017.05-x86_64_arm-linux-gnueabihf
-TOOLCHAIN_URL=https://releases.linaro.org/components/toolchain/binaries/5.4-2017.05/arm-linux-gnueabihf/$(TOOLCHAIN_RELEASE).tar.xz
-TOOLCHAIN64_RELEASE=gcc-linaro-5.4.1-2017.05-i686_aarch64-linux-gnu
-TOOLCHAIN64_URL=https://releases.linaro.org/components/toolchain/binaries/5.4-2017.05/aarch64-linux-gnu/$(TOOLCHAIN64_RELEASE).tar.xz
+TOOLCHAIN_RELEASE=gcc-linaro-5.5.0-2017.10-x86_64_arm-linux-gnueabihf
+TOOLCHAIN_URL=https://releases.linaro.org/components/toolchain/binaries/5.5-2017.10/arm-linux-gnueabihf/$(TOOLCHAIN_RELEASE).tar.xz
+TOOLCHAIN64_RELEASE=gcc-linaro-5.5.0-2017.10-x86_64_aarch64-linux-gnu
+TOOLCHAIN64_URL=https://releases.linaro.org/components/toolchain/binaries/5.5-2017.10/aarch64-linux-gnu/$(TOOLCHAIN64_RELEASE).tar.xz
 
 # dont edit after this line
 BUILD_PATH=$(PROJECT)
