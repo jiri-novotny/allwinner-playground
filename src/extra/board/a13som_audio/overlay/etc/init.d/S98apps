@@ -1,0 +1,93 @@
+#!/bin/sh
+
+start() {
+  echo "Starting apps..."
+
+  ret=0
+  while [ $ret -le 0 ]; do
+    ret=`ip a | grep -e wlan -e eth | wc -l`
+    sleep 0.5
+  done
+
+  if [ `ip a | grep wlan | wc -l` -eq 0 ]; then
+    IFACE=eth
+    # wait for network
+    sleep 1
+    # start network
+    ifup eth0
+  else
+    IFACE=wlan
+    # wait for network
+    ret=1
+    while [ $ret -eq 1 ]; do
+      sleep 0.5
+      # start wpa
+      wpa_supplicant -c /etc/wpa_supplicant.conf -B -D nl80211 -i wlan0
+      ret=`echo $?`
+    done
+    sleep 1
+    # start network
+    ifup wlan0
+  fi
+
+  # set time
+  if [ `ip a | grep inet | wc -l` -gt 1 ]; then
+    echo "Configuring date..."
+    ntpd -q -p ntp.cesnet.cz
+  else
+    echo "No IP, skipping date config..."
+  fi
+
+  IP=`ip a | grep $IFACE | grep inet | cut -d "/" -f 1 | grep -o '[^ ]*$'`
+  sed "1s/.*/var ip=\"$IP\";/" /var/www/js/websock.js.in > /var/www/js/websock.js
+
+  # set default state
+  /usr/bin/rfmctrl 192.168.0.10 9000 N1 > /dev/null 2>&1
+  amixer sset 'Power Amplifier',0 16 > /dev/null 2>&1
+  mkfifo /tmp/mplayer.fifo
+  mplayer -cache 500 -idle -slave -input file=/tmp/mplayer.fifo > /dev/null 2>&1 &
+  
+  # mute stream
+  /usr/bin/radio none
+
+  # start websocket server
+  nohup /usr/sbin/websocketserver > /dev/null 2> /dev/null &
+  
+  # start cron
+  mkdir -p /var/spool/cron/crontabs
+  cp /etc/crond/* /var/spool/cron/crontabs
+  crond
+}
+
+stop() {
+  /usr/bin/rfmctrl 192.168.0.10 9000 N1 > /dev/null 2>&1
+  /usr/bin/radio none
+  killall websocketserver
+  killall mplayer
+  killall crond
+  rm -rf /tmp/mplayer.fifo
+  rm -rf /var/spool/cron
+}
+
+restart() {
+  stop
+  sleep 1
+  start
+}
+
+case "$1" in
+  start)
+    start
+  ;;
+  stop)
+    stop
+  ;;
+  restart|reload)
+    restart
+  ;;
+  *)
+    echo "Usage: $0 {start|restart|stop}"
+    exit 1
+esac
+
+exit $?

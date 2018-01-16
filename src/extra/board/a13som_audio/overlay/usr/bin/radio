@@ -35,7 +35,9 @@ if [ ! $VAR == "none" ]; then
   sleep ${SLEEP_TIME}
   amixer sset 'Left Mixer Left DAC',0 off  > /dev/null 2> /dev/null &
   amixer sset 'Right Mixer Right DAC',0 off > /dev/null 2> /dev/null &
+  rm -rf /var/run/muted
 else
+  touch /var/run/muted
   amixer sset 'Left Mixer Left DAC',0 on > /dev/null 2> /dev/null &
   amixer sset 'Right Mixer Right DAC',0 on > /dev/null 2> /dev/null &
   echo "stop" > /tmp/mplayer.fifo

@@ -1,0 +1,7 @@
+#!/bin/sh
+
+touch /var/run/muted
+amixer sset 'Left Mixer Left DAC',0 on > /dev/null 2> /dev/null &
+amixer sset 'Right Mixer Right DAC',0 on > /dev/null 2> /dev/null &
+echo "loadfile http://icecast8.play.cz/cro1-128.mp3" > /tmp/mplayer.fifo
+ 
