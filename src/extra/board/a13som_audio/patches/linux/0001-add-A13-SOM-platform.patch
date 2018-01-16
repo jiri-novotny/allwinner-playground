@@ -246,7 +246,7 @@ index 0000000..e2c71cc
 +		function = "gpio_in";
 +		bias-pull-up;
 +	};
-+
++/*
 +	nand_pins_a: nand_pins@0 {
 +		pins = "PC0", "PC1", "PC2", "PC5",
 +				"PC8", "PC9", "PC10", "PC11",
@@ -262,7 +262,7 @@ index 0000000..e2c71cc
 +	nand_rb0_pins_a: nand_rb0@0 {
 +		pins = "PC6";
 +		function = "nand0";
-+	};
++	};*/
 +};
 +
 +&uart1 {
@@ -313,30 +313,6 @@ index 0000000..e2c71cc
 +		nand-on-flash-bbt;
 +	};
 +};
-diff --git a/arch/arm/boot/dts/sun5i.dtsi b/arch/arm/boot/dts/sun5i.dtsi
-index a9574a6..4b1be69 100644
---- a/arch/arm/boot/dts/sun5i.dtsi
-+++ b/arch/arm/boot/dts/sun5i.dtsi
-@@ -128,6 +128,19 @@
- 			#dma-cells = <2>;
- 		};
- 
-+		nfc: nand@01c03000 {
-+			compatible = "allwinner,sun4i-a10-nand";
-+			reg = <0x01c03000 0x1000>;
-+			interrupts = <37>;
-+			clocks = <&ccu CLK_AHB_NAND>, <&ccu CLK_NAND>;
-+			clock-names = "ahb", "mod";
-+			dmas = <&dma SUN4I_DMA_DEDICATED 3>;
-+			dma-names = "rxtx";
-+			status = "disabled";
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+		};
-+
- 		spi0: spi@01c05000 {
- 			compatible = "allwinner,sun4i-a10-spi";
- 			reg = <0x01c05000 0x1000>;
 -- 
 2.7.4
 

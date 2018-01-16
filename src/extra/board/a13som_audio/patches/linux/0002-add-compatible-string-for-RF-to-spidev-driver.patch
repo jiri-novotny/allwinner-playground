@@ -1,7 +1,7 @@
-From 14bda3e09947e539175ba7d9e126560a8c249c6b Mon Sep 17 00:00:00 2001
+From e6a1a461a8013f44db9e85d8a8705e554a9a4bb2 Mon Sep 17 00:00:00 2001
 From: Jiri Novotny <jiri.novotny@logicelements.cz>
-Date: Wed, 3 May 2017 21:10:56 +0200
-Subject: [PATCH 2/2] add hope radio to spidev comapible list
+Date: Thu, 11 May 2017 10:41:01 +0200
+Subject: [PATCH] add compatible string for RF to spidev driver
 
 Signed-off-by: Jiri Novotny <jiri.novotny@logicelements.cz>
 ---
@@ -9,7 +9,7 @@ Signed-off-by: Jiri Novotny <jiri.novotny@logicelements.cz>
  1 file changed, 1 insertion(+)
 
 diff --git a/drivers/spi/spidev.c b/drivers/spi/spidev.c
-index 9e2e099..8537021 100644
+index 9e2e099..df14dec 100644
 --- a/drivers/spi/spidev.c
 +++ b/drivers/spi/spidev.c
 @@ -697,6 +697,7 @@ static const struct of_device_id spidev_dt_ids[] = {
@@ -17,8 +17,8 @@ index 9e2e099..8537021 100644
  	{ .compatible = "lineartechnology,ltc2488" },
  	{ .compatible = "ge,achc" },
 +	{ .compatible = "hoperf,rfm7x" },
+ 	{ .compatible = "semtech,sx1301" },
  	{},
- };
  MODULE_DEVICE_TABLE(of, spidev_dt_ids);
 -- 
 2.7.4
