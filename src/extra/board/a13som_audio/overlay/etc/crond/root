@@ -3,3 +3,4 @@
 20 5 * * 3 /usr/bin/radio cro1
 45 6 * * 1,2,4,5 /usr/bin/radio none
 20 6 * * 3 /usr/bin/radio none
+0/2 * * * * /usr/bin/checksound

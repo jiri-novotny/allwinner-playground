@@ -22,3 +22,8 @@ fi
 if [ -d ${TARGET_DIR}/usr/lib32 ]; then
   rm -rf ${TARGET_DIR}/usr/lib32
 fi
+
+# remove triggerhappy config folder
+if [ -d ${TARGET_DIR}/etc/triggerhappy ]; then
+  rm -rf ${TARGET_DIR}/etc/triggerhappy
+fi
