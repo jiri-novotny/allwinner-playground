@@ -1,0 +1,10 @@
+config BR2_PACKAGE_NRF24
+	bool "nrf24"
+	depends on BR2_LINUX_KERNEL && BR2_arm
+	select BR2_LINUX_NEEDS_MODULES
+	help
+	  Kernel module for Nordic Semi nRF24L01+
+
+comment "nrf24 needs a Linux kernel to be built"
+	depends on BR2_arm
+	depends on !BR2_LINUX_KERNEL
