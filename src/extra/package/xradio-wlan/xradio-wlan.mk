@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-XRADIO_WLAN_VERSION = b00ccb0e1524bf53e443fc5777df841b5db3c4e0
+XRADIO_WLAN_VERSION = 33f4b1c25eff0d9db7cbac19f36b130da9857f37
 XRADIO_WLAN_SITE = $(call github,fifteenhex,xradio,$(XRADIO_WLAN_VERSION))
 XRADIO_WLAN_LICENSE = GPLv2
 XRADIO_WLAN_DEPENDENCIES = linux
@@ -22,14 +22,12 @@ define XRADIO_WLAN_COPY_FW
 	if [ ! -d $(TARGET_DIR)/lib/firmware/xr819 ]; then \
 		mkdir $(TARGET_DIR)/lib/firmware/xr819; \
 	fi
-	$(INSTALL) -D -m 0644 $(BR2_EXTERNAL_ALLWINNER_PATH)/package/xradio-wlan/firmware/r16sdk/boot_B100.bin \
+	$(INSTALL) -D -m 0644 $(BR2_EXTERNAL_EXTRAS_PATH)/package/xradio-wlan/firmware/h2sdk/boot_*.bin \
 		$(TARGET_DIR)/lib/firmware/xr819/
-	$(INSTALL) -D -m 0644 $(BR2_EXTERNAL_ALLWINNER_PATH)/package/xradio-wlan/firmware/r16sdk/etf_B100.bin \
-		$(TARGET_DIR)/lib/firmware/xr819/etf_B100.bin
-	$(INSTALL) -D -m 0644 $(BR2_EXTERNAL_ALLWINNER_PATH)/package/xradio-wlan/firmware/r16sdk/fw_B100.bin \
-		$(TARGET_DIR)/lib/firmware/xr819/fw_B100.bin
-	$(INSTALL) -D -m 0644 $(BR2_EXTERNAL_ALLWINNER_PATH)/package/xradio-wlan/firmware/r16sdk/sdd_B100.bin \
-		$(TARGET_DIR)/lib/firmware/xr819/sdd_B100.bin
+	$(INSTALL) -D -m 0644 $(BR2_EXTERNAL_EXTRAS_PATH)/package/xradio-wlan/firmware/h2sdk/fw_*.bin \
+		$(TARGET_DIR)/lib/firmware/xr819/
+	$(INSTALL) -D -m 0644 $(BR2_EXTERNAL_EXTRAS_PATH)/package/xradio-wlan/firmware/h2sdk/sdd_*.bin \
+		$(TARGET_DIR)/lib/firmware/xr819/
 endef
 XRADIO_WLAN_POST_INSTALL_TARGET_HOOKS += XRADIO_WLAN_COPY_FW
 endif
