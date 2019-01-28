@@ -9,7 +9,7 @@ BUILDROOT_USE_GIT=0
 # you can set buildroot git version (branch or tag)
 BUILDROOT_BRANCH=master
 # you can set buildroot static version
-BUILDROOT_RELEASE=buildroot-2017.11.2
+BUILDROOT_RELEASE=buildroot-2018.11.1
 
 # you current project name
 PROJECT?=a13som_audio
@@ -22,10 +22,10 @@ MOUNT_PATH=/mnt
 # you probably dont want to change buildroot source url
 BUILDROOT_GIT=git://git.buildroot.net/buildroot
 BUILDROOT_URL=https://buildroot.org/downloads/$(BUILDROOT_RELEASE).tar.gz
-TOOLCHAIN_RELEASE=gcc-linaro-5.5.0-2017.10-x86_64_arm-linux-gnueabihf
-TOOLCHAIN_URL=https://releases.linaro.org/components/toolchain/binaries/5.5-2017.10/arm-linux-gnueabihf/$(TOOLCHAIN_RELEASE).tar.xz
-TOOLCHAIN64_RELEASE=gcc-linaro-5.5.0-2017.10-x86_64_aarch64-linux-gnu
-TOOLCHAIN64_URL=https://releases.linaro.org/components/toolchain/binaries/5.5-2017.10/aarch64-linux-gnu/$(TOOLCHAIN64_RELEASE).tar.xz
+TOOLCHAIN_RELEASE=gcc-linaro-6.5.0-2018.12-x86_64_arm-linux-gnueabihf
+TOOLCHAIN_URL=https://releases.linaro.org/components/toolchain/binaries/6.5-2018.12/arm-linux-gnueabihf/$(TOOLCHAIN_RELEASE).tar.xz
+TOOLCHAIN64_RELEASE=gcc-linaro-6.5.0-2018.12-x86_64_aarch64-linux-gnu
+TOOLCHAIN64_URL=https://releases.linaro.org/components/toolchain/binaries/6.5-2018.12/aarch64-linux-gnu/$(TOOLCHAIN64_RELEASE).tar.xz
 
 # dont edit after this line
 BUILD_PATH=$(PROJECT)
@@ -95,7 +95,7 @@ config:
 defconfig:
 	$(MAKE) BR2_EXTERNAL=../$(EXTRA_PATH) -C $(SRC_PATH)/buildroot O=../../$(BUILD_PATH) $(DEFCONFIG)
 
-savedefconfig:
+save:
 	$(MAKE) BR2_EXTERNAL=../$(EXTRA_PATH) -C $(SRC_PATH)/buildroot O=../../$(BUILD_PATH) savedefconfig
 
 clean:
@@ -120,7 +120,9 @@ ifdef DRIVE
 	sudo mkfs.ext4 -F -L rootfs $(DRIVE)1
 	sudo mount $(DRIVE)1 $(MOUNT_PATH)
 	sudo tar -xf $(BUILD_PATH)/images/rootfs.tar -C $(MOUNT_PATH)
-	sudo cp $(BUILD_PATH)/images/u-boot-sunxi-with-spl.bin $(MOUNT_PATH)/boot
+	if [ $(DEPLOY_UBOOT_MBR) -eq 1 ]; then \
+		sudo cp $(BUILD_PATH)/images/u-boot-sunxi-with-spl.bin $(MOUNT_PATH)/boot; \
+	fi
 	sudo umount $(MOUNT_PATH)
 else
 	$(info Define DRIVE variable (e.g. DRIVE=/dev/sdx))

@@ -1,0 +1,10 @@
+config BR2_PACKAGE_RFM73
+	bool "rfm73"
+	depends on BR2_LINUX_KERNEL
+	select BR2_LINUX_NEEDS_MODULES
+	help
+	  rfm73 netdev driver
+
+comment "rfm73 needs a Linux kernel to be built"
+	depends on !BR2_LINUX_KERNEL
+  

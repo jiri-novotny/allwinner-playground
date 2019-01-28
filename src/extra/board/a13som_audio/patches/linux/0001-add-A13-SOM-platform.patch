@@ -1,34 +1,9 @@
-From 66abda1f4603c00c1395aa7a1f1f636a027f9a4e Mon Sep 17 00:00:00 2001
-From: Jiri Novotny <jiri.novotny@logicelements.cz>
-Date: Wed, 3 May 2017 21:07:58 +0200
-Subject: [PATCH 1/2] add A13 SOM platform
-
-Signed-off-by: Jiri Novotny <jiri.novotny@logicelements.cz>
----
- arch/arm/boot/dts/Makefile                     |   1 +
- arch/arm/boot/dts/sun5i-a13-olimex-som-bpl.dts | 284 +++++++++++++++++++++++++
- arch/arm/boot/dts/sun5i.dtsi                   |  13 ++
- 3 files changed, 298 insertions(+)
- create mode 100644 arch/arm/boot/dts/sun5i-a13-olimex-som-bpl.dts
-
-diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-index 0118084..2cddd6f 100644
---- a/arch/arm/boot/dts/Makefile
-+++ b/arch/arm/boot/dts/Makefile
-@@ -800,6 +800,7 @@ dtb-$(CONFIG_MACH_SUN5I) += \
- 	sun5i-a13-hsg-h702.dtb \
- 	sun5i-a13-inet-98v-rev2.dtb \
- 	sun5i-a13-licheepi-one.dtb \
-+	sun5i-a13-olimex-som-bpl.dtb \
- 	sun5i-a13-olinuxino.dtb \
- 	sun5i-a13-olinuxino-micro.dtb \
- 	sun5i-a13-q8-tablet.dtb \
 diff --git a/arch/arm/boot/dts/sun5i-a13-olimex-som-bpl.dts b/arch/arm/boot/dts/sun5i-a13-olimex-som-bpl.dts
 new file mode 100644
-index 0000000..e2c71cc
+index 0000000..9664ea9
 --- /dev/null
 +++ b/arch/arm/boot/dts/sun5i-a13-olimex-som-bpl.dts
-@@ -0,0 +1,284 @@
+@@ -0,0 +1,271 @@
 +/*
 + * Copyright 2012 Jiri Novotny
 + *
@@ -74,6 +49,7 @@ index 0000000..e2c71cc
 + */
 +
 +/dts-v1/;
++#include "sun5i.dtsi"
 +#include "sun5i-a13.dtsi"
 +
 +#include <dt-bindings/gpio/gpio.h>
@@ -128,6 +104,31 @@ index 0000000..e2c71cc
 +	};
 +};
 +
++
++&spi2 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&spi2_pins_a>, <&spi2_cs0_pins_a>;
++	status = "okay";
++
++	#address-cells = <1>;
++	#size-cells = <0>;
++	radio@0 {
++		compatible = "hoperf,rfm73";
++		spi-max-frequency = <8000000>;
++		rfm73,irq = <&pio 1 10 GPIO_ACTIVE_LOW>; /* PB10 */
++		rfm73,ce = <&pio 6 1 GPIO_ACTIVE_HIGH>; /* PG1 */
++		reg = <0>;
++	};
++};
++
++&codec {
++	status = "okay";
++};
++
++&ehci0 {
++	status = "okay";
++};
++
 +&i2c0 {
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&i2c0_pins_a>;
@@ -156,21 +157,6 @@ index 0000000..e2c71cc
 +	status = "okay";
 +};
 +
-+&spi2 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&spi2_pins_a>,
-+		    <&spi2_cs0_pins_a>;
-+	status = "okay";
-+
-+	#address-cells = <1>;
-+	#size-cells = <0>;
-+	radio@0 {
-+		compatible = "hoperf,rfm7x";
-+		spi-max-frequency = <8000000>;
-+		reg = <0>;
-+	};
-+};
-+
 +&lradc {
 +	vref-supply = <&vanalog>;
 +	status = "okay";
@@ -197,10 +183,6 @@ index 0000000..e2c71cc
 +	};
 +};
 +
-+&codec {
-+	status = "okay";
-+};
-+
 +&mmc0 {
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&mmc0_pins_a>, <&mmc0_cd_pin>;
@@ -208,6 +190,30 @@ index 0000000..e2c71cc
 +	bus-width = <4>;
 +	cd-gpios = <&pio 6 0 GPIO_ACTIVE_HIGH>; /* PG0 */
 +	cd-inverted;
++	status = "okay";
++};
++
++&nfc {
++	pinctrl-names = "default";
++	pinctrl-0 = <&nand_pins_a>, <&nand_cs0_pins_a>, <&nand_rb0_pins_a>;
++	status = "okay";
++
++	nand@0 {
++		#address-cells = <2>;
++		#size-cells = <2>;
++		reg = <0>;
++		allwinner,rb = <0>;
++		nand-ecc-mode = "hw";
++		nand-ecc-strength = <16>;
++		nand-ecc-step-size = <1024>;
++	};
++};
++
++&ohci0 {
++	status = "okay";
++};
++
++&otg_sram {
 +	status = "okay";
 +};
 +
@@ -221,6 +227,7 @@ index 0000000..e2c71cc
 +	led_pins: led_pins@0 {
 +		pins = "PG9";
 +		function = "gpio_out";
++    drive-strength = <20>;
 +	};
 +
 +	usb0_id_detect_pin: usb0_id_detect_pin@0 {
@@ -238,7 +245,7 @@ index 0000000..e2c71cc
 +	rfm_ce_pin: rfm_ce_pin@0 {
 +		pins = "PG1";
 +		function = "gpio_out";
-+    bias-pull-down;
++		bias-pull-down;
 +	};
 +
 +	rfm_irq_pin: rfm_irq_pin@0 {
@@ -246,23 +253,6 @@ index 0000000..e2c71cc
 +		function = "gpio_in";
 +		bias-pull-up;
 +	};
-+/*
-+	nand_pins_a: nand_pins@0 {
-+		pins = "PC0", "PC1", "PC2", "PC5",
-+				"PC8", "PC9", "PC10", "PC11",
-+				"PC12", "PC13", "PC14", "PC15";
-+		function = "nand0";
-+	};
-+
-+	nand_cs0_pins_a: nand_cs0@0 {
-+		pins = "PC4";
-+		function = "nand0";
-+	};
-+
-+	nand_rb0_pins_a: nand_rb0@0 {
-+		pins = "PC6";
-+		function = "nand0";
-+	};*/
 +};
 +
 +&uart1 {
@@ -271,21 +261,9 @@ index 0000000..e2c71cc
 +	status = "okay";
 +};
 +
-+&ohci0 {
-+	status = "okay";
-+};
-+
-+&ehci0 {
-+	status = "okay";
-+};
-+
 +&usb_otg {
 +	status = "okay";
 +	dr_mode = "otg";
-+};
-+
-+&otg_sram {
-+	status = "okay";
 +};
 +
 +&usbphy {
@@ -297,22 +275,3 @@ index 0000000..e2c71cc
 +	usb1_vbus-supply = <&vin>;
 +	status = "okay";
 +};
-+
-+&nfc {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&nand_pins_a>, <&nand_cs0_pins_a>, <&nand_rb0_pins_a>;
-+	status = "okay";
-+
-+	nand@0 {
-+		#address-cells = <2>;
-+		#size-cells = <2>;
-+		reg = <0>;
-+		allwinner,rb = <0>;
-+
-+		nand-ecc-mode = "hw";
-+		nand-on-flash-bbt;
-+	};
-+};
--- 
-2.7.4
-

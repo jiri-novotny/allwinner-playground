@@ -1,0 +1,12 @@
+diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+index b0e966d..2c9673d 100644
+--- a/arch/arm/boot/dts/Makefile
++++ b/arch/arm/boot/dts/Makefile
+@@ -966,6 +966,7 @@ dtb-$(CONFIG_MACH_SUN5I) += \
+ 	sun5i-a13-hsg-h702.dtb \
+ 	sun5i-a13-inet-98v-rev2.dtb \
+ 	sun5i-a13-licheepi-one.dtb \
++	sun5i-a13-olimex-som-bpl.dtb \
+ 	sun5i-a13-olinuxino.dtb \
+ 	sun5i-a13-olinuxino-micro.dtb \
+ 	sun5i-a13-q8-tablet.dtb \
