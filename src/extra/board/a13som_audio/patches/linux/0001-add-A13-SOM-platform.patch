@@ -116,7 +116,7 @@ index 0000000..9664ea9
 +		compatible = "hoperf,rfm73";
 +		spi-max-frequency = <8000000>;
 +		rfm73,irq = <&pio 1 10 GPIO_ACTIVE_LOW>; /* PB10 */
-+		rfm73,ce = <&pio 6 1 GPIO_ACTIVE_HIGH>; /* PG1 */
++		rfm73,ce = <&pio 6 12 GPIO_ACTIVE_HIGH>; /* PG12 */
 +		reg = <0>;
 +	};
 +};
@@ -231,7 +231,7 @@ index 0000000..9664ea9
 +	};
 +
 +	usb0_id_detect_pin: usb0_id_detect_pin@0 {
-+		pins = "PG12";
++		pins = "PG1";
 +		function = "gpio_in";
 +		bias-pull-up;
 +	};
@@ -243,7 +243,7 @@ index 0000000..9664ea9
 +	};
 +
 +	rfm_ce_pin: rfm_ce_pin@0 {
-+		pins = "PG1";
++		pins = "PG12";
 +		function = "gpio_out";
 +		bias-pull-down;
 +	};
@@ -269,7 +269,7 @@ index 0000000..9664ea9
 +&usbphy {
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&usb0_id_detect_pin>, <&usb0_vbus_detect_pin>;
-+	usb0_id_det-gpio = <&pio 6 12 GPIO_ACTIVE_HIGH>; /* PG12 */
++	usb0_id_det-gpio = <&pio 6 1 GPIO_ACTIVE_HIGH>; /* PG1 */
 +	usb0_vbus_det-gpio = <&pio 1 4 GPIO_ACTIVE_HIGH>; /* PB4 */
 +	usb0_vbus-supply = <&vin>;
 +	usb1_vbus-supply = <&vin>;

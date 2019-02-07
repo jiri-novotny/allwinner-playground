@@ -178,12 +178,12 @@ static ssize_t rfm73_readFifo(struct rfm73_data *rfm73, uint8_t *dest, uint8_t c
 
 static ssize_t rfm73_writeFifo(struct rfm73_data *rfm73, uint8_t *vals, uint8_t len)
 {
-  rfm73->tx_buf[0] = W_TX_PAYLOAD;
+  rfm73->tx_buf[0] = W_TX_PAYLOAD_NOACK;//W_TX_PAYLOAD;
   rfm73->t[0].tx_buf = rfm73->tx_buf;
   rfm73->t[0].rx_buf = rfm73->rx_buf;
   rfm73->t[0].len = 1;
-  rfm73->t[1].tx_buf = NULL;
-  rfm73->t[1].rx_buf = vals;
+  rfm73->t[1].tx_buf = vals;
+  rfm73->t[1].rx_buf = NULL;
   rfm73->t[1].len = len;
   
   return spi_sync_transfer(rfm73->spi, rfm73->t, 2);
@@ -223,7 +223,7 @@ static void rfm73_tx_work_handler(struct work_struct *work)
   rfm73_writeReg(rfm73, CONFIG, 0x0E);
   mutex_unlock(&rfm73->rf_lock);
 
-  rfm73->lastLen = rfm73->tx_skb->len;
+  rfm73->lastLen = rfm73->tx_skb->len - rfm73->addrLen;
   rfm73_writeRegs(rfm73, TX_ADDR, rfm73->tx_skb->data, rfm73->addrLen);
   rfm73_writeFifo(rfm73, rfm73->tx_skb->data + rfm73->addrLen, rfm73->lastLen);
   gpio_set_value(rfm73->ceGpio, 1);
@@ -365,6 +365,7 @@ static ssize_t rfm73_initialize(struct rfm73_data *rfm73)
   rfm73_writeRegs(rfm73, tmp, Bank1_Reg14, 11);
   
   /* toggle to bank 0 */
+  tmp = 0x53;
   rfm73_cmd(rfm73, ACTIVATE, tmp, 1);
   
   rfm73_writeReg(rfm73, FEATURE, 0x01);
@@ -421,7 +422,7 @@ static int rfm73_open(struct net_device *dev)
   struct rfm73_data *rfm73 = netdev_priv(dev);
   int res;
 
-  if (0 == ((uint32_t *) &dev->dev_addr))
+  if (0 == dev->dev_addr[0])
   {
     rfm73_readRegsDest(rfm73, RX_ADDR_P0, rfm73->addrLen, dev->dev_addr);
     res = rfm73->addrLen;
@@ -432,9 +433,7 @@ static int rfm73_open(struct net_device *dev)
     rfm73_readRegsDest(rfm73, RX_ADDR_P3, 1, dev->dev_addr + res);
   }
 
-  res = request_threaded_irq(dev->irq, NULL, rfm73_handler,
-                             IRQF_ONESHOT | IRQF_TRIGGER_FALLING,
-                             "rfm73", rfm73);
+  res = request_threaded_irq(dev->irq, NULL, rfm73_handler, IRQF_ONESHOT | IRQF_TRIGGER_FALLING, "rfm73", rfm73);
   if (res)
   {
     dev_err(&rfm73->spi->dev,"open return %d",res);
@@ -513,7 +512,7 @@ static void dev_setup(struct net_device *dev)
   dev->type = ARPHRD_NONE;
   dev->mtu = 32 + 5;
   dev->addr_len = 1;
-  dev->tx_queue_len = 10;
+  dev->tx_queue_len = 100;
   rfm73->dev = dev;
 }
 
@@ -547,21 +546,12 @@ static int rfm73_probe(struct spi_device *spi)
     return -ENXIO;
   }
 
-  if (gpio_is_valid(gpioCe))
-  {
-    if (devm_gpio_request_one(&spi->dev, gpioCe, GPIOF_OUT_INIT_LOW, "rfm73 ce"))
-    {
-      dev_err(&spi->dev, "gpio ce request failed.\n");
-      return -ENXIO;
-    }
-  }
   if (gpio_is_valid(gpioIrq))
   {
     if (devm_gpio_request_one(&spi->dev, gpioIrq, GPIOF_IN, "rfm73 irq"))
     {
       dev_err(&spi->dev, "gpio irq request failed.\n");
-      status=-ENXIO;
-      goto gpio;
+      return -ENXIO;
     }
   }
   spi->irq = gpio_to_irq(gpioIrq);
@@ -569,7 +559,16 @@ static int rfm73_probe(struct spi_device *spi)
   {
     dev_err(&spi->dev,"Invalid irq for gpio-irq.\n");
     status = -ENXIO;
-    goto gpio1;
+    goto gpio;
+  }
+  if (gpio_is_valid(gpioCe))
+  {
+    if (devm_gpio_request_one(&spi->dev, gpioCe, GPIOF_OUT_INIT_LOW, "rfm73 ce"))
+    {
+      dev_err(&spi->dev, "gpio ce request failed.\n");
+      status = -ENXIO;
+      goto gpio;
+    }
   }
 
   /* Allocate driver data */
@@ -578,7 +577,7 @@ static int rfm73_probe(struct spi_device *spi)
   {
     dev_err(&spi->dev,"Allocate net dev failed.\n");
     status = -ENOMEM;
-    goto gpio;
+    goto gpio1;
   }
   rfm73 = netdev_priv(dev);
 
@@ -608,11 +607,9 @@ static int rfm73_probe(struct spi_device *spi)
   rfm73->t[0].tx_buf = rfm73->tx_buf;
   rfm73->t[0].rx_buf = NULL;
   rfm73->t[0].delay_usecs = 0;
-  rfm73->t[0].speed_hz = 8000000;
   rfm73->t[1].tx_buf = NULL;
   rfm73->t[1].rx_buf = rfm73->rx_buf;
   rfm73->t[1].delay_usecs = 0;
-  rfm73->t[1].speed_hz = 8000000;
   mutex_init(&rfm73->rf_lock);
 
   INIT_WORK(&rfm73->irq_work, rfm73_irq_work_handler);
@@ -626,9 +623,9 @@ static int rfm73_probe(struct spi_device *spi)
 mem:
   free_netdev(dev);
 gpio1:
-  devm_gpio_free(&spi->dev, gpioIrq);
-gpio:
   devm_gpio_free(&spi->dev, gpioCe);
+gpio:
+  devm_gpio_free(&spi->dev, gpioIrq);
   return status;
 }
 
