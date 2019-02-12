@@ -55,8 +55,6 @@
 
 #include "rfm73.h"
 
-#define USE_FULL_FUPLEX                     1
-
 struct rfm73_data {
   struct spi_device *spi;
   struct net_device *dev;
@@ -119,13 +117,7 @@ static ssize_t rfm73_readRegsDest(struct rfm73_data *rfm73, uint8_t reg, uint8_t
 {
   rfm73->tx_buf[0] = R_REGISTER | reg;
   rfm73->t[0].tx_buf = rfm73->tx_buf;
-#if USE_FULL_FUPLEX
-  rfm73->t[0].len = 1 + cnt;
-  rfm73->t[0].rx_buf = dest;
-  rfm73->recv = dest + 1;
-
-  return spi_sync_transfer(rfm73->spi, rfm73->t, 1);
-#else
+  rfm73->t[0].rx_buf = rfm73->rx_buf;
   rfm73->t[0].len = 1;
   rfm73->t[1].tx_buf = NULL;
   rfm73->t[1].rx_buf = dest;
@@ -133,7 +125,6 @@ static ssize_t rfm73_readRegsDest(struct rfm73_data *rfm73, uint8_t reg, uint8_t
   rfm73->t[1].len = cnt;
 
   return spi_sync_transfer(rfm73->spi, rfm73->t, 2);
-#endif
 }
 
 static ssize_t rfm73_readRegs(struct rfm73_data *rfm73, uint8_t reg, uint8_t cnt)
@@ -170,10 +161,13 @@ static ssize_t rfm73_readFifo(struct rfm73_data *rfm73, uint8_t *dest, uint8_t c
 {
   rfm73->tx_buf[0] = R_RX_PAYLOAD;
   rfm73->t[0].tx_buf = rfm73->tx_buf;
-  rfm73->t[0].rx_buf = dest;
-  rfm73->t[0].len = cnt;
+  rfm73->t[0].rx_buf = rfm73->rx_buf;
+  rfm73->t[0].len = 1;
+  rfm73->t[1].tx_buf = NULL;
+  rfm73->t[1].rx_buf = dest;
+  rfm73->t[1].len = cnt;
   
-  return spi_sync_transfer(rfm73->spi, rfm73->t, 1);
+  return spi_sync_transfer(rfm73->spi, rfm73->t, 2);
 }
 
 static ssize_t rfm73_writeFifo(struct rfm73_data *rfm73, uint8_t *vals, uint8_t len)
@@ -189,12 +183,12 @@ static ssize_t rfm73_writeFifo(struct rfm73_data *rfm73, uint8_t *vals, uint8_t 
   return spi_sync_transfer(rfm73->spi, rfm73->t, 2);
 }
 
-static ssize_t rfm73_cmd(struct rfm73_data *rfm73, uint8_t cmd, uint8_t payload, uint8_t payLen)
+static ssize_t rfm73_cmd(struct rfm73_data *rfm73, uint8_t cmd, uint8_t payload, uint8_t payLen, uint8_t *status)
 {
   rfm73->tx_buf[0] = cmd;
   rfm73->tx_buf[1] = payload;
   rfm73->t[0].tx_buf = rfm73->tx_buf;
-  rfm73->t[0].rx_buf = NULL;
+  rfm73->t[0].rx_buf = status;
   rfm73->t[0].len = 1 + payLen;
   
   return spi_sync_transfer(rfm73->spi, rfm73->t, 1);
@@ -223,9 +217,9 @@ static void rfm73_tx_work_handler(struct work_struct *work)
   rfm73_writeReg(rfm73, CONFIG, 0x0E);
   mutex_unlock(&rfm73->rf_lock);
 
-  rfm73->lastLen = rfm73->tx_skb->len - rfm73->addrLen;
+  rfm73->lastLen = rfm73->tx_skb->len;
   rfm73_writeRegs(rfm73, TX_ADDR, rfm73->tx_skb->data, rfm73->addrLen);
-  rfm73_writeFifo(rfm73, rfm73->tx_skb->data + rfm73->addrLen, rfm73->lastLen);
+  rfm73_writeFifo(rfm73, rfm73->tx_skb->data, rfm73->lastLen);
   gpio_set_value(rfm73->ceGpio, 1);
 }
 
@@ -240,33 +234,6 @@ static netdev_tx_t rfm73_send_packet(struct sk_buff *skb, struct net_device *dev
   return NETDEV_TX_OK;
 }
 
-/* ------------------------------------------------------------------------- */
-
-static void rfm73_recv_packet(struct rfm73_data *rfm73)
-{
-  struct sk_buff *skb;
-  unsigned char *tmp;
-
-  if (!(skb = netdev_alloc_skb(rfm73->dev, rfm73->recvLen)))
-  {
-    dev_err(&rfm73->spi->dev,"memory squeeze, dropping packet\n");
-    rfm73->dev->stats.rx_dropped++;
-  }
-  else
-  {
-    tmp = skb_put(skb, rfm73->recvLen);
-    memcpy(tmp, rfm73->packet, rfm73->recvLen);
-    skb->pkt_type = PACKET_HOST;
-    skb->dev = rfm73->dev;
-    skb->protocol = htons(ETH_P_NONE);
-    skb_reset_mac_header(skb);
-    skb->ip_summed = CHECKSUM_UNNECESSARY;
-    rfm73->dev->stats.rx_bytes += skb->len;
-    rfm73->dev->stats.rx_packets++;
-
-    netif_receive_skb(skb);
-  }
-}
 /* ------------------------------------------------------------------------- */
 
 static irqreturn_t rfm73_handler(int irq, void *dev)
@@ -288,33 +255,38 @@ static irqreturn_t rfm73_handler(int irq, void *dev)
 static void rfm73_irq_work_handler(struct work_struct *work)
 {
   struct rfm73_data *rfm73 = container_of(work, struct rfm73_data, irq_work);
+  struct sk_buff *skb;
+  uint8_t *tmp;
   uint8_t status;
-  uint8_t pipe;
 
   mutex_lock(&rfm73->rf_lock);
-  rfm73_readRegsDest(rfm73, STATUS, 1, &status);
+  rfm73_cmd(rfm73, NOP, 0, 0, &status);
 
   if (status & IRQ_RX_DATA_READY)
   {
-    /* Get the RX pipe */
-    pipe = (status & 0xe0) >> 1;
-    rfm73_readRegs(rfm73, RX_PW_P0 + pipe, 1);
-    rfm73->recvLen = rfm73->recv[0];
-    if (0 == pipe)
+    /* Get payload length */
+    rfm73_readRegsDest(rfm73, R_RX_PL_WID, 1, &rfm73->recvLen);
+
+    if (!(skb = netdev_alloc_skb(rfm73->dev, rfm73->recvLen)))
     {
-      rfm73_readRegsDest(rfm73, RX_ADDR_P0, rfm73->addrLen, rfm73->packet);
+      dev_err(&rfm73->spi->dev,"memory squeeze, dropping packet\n");
+      rfm73->dev->stats.rx_dropped++;
     }
     else
     {
-      rfm73_readRegsDest(rfm73, RX_ADDR_P1, rfm73->addrLen, rfm73->packet);
-      rfm73_readRegsDest(rfm73, RX_ADDR_P1 + pipe - 1, 1, rfm73->packet);
-    }
-    /* Read the RX FIFO */
-    rfm73_readFifo(rfm73, rfm73->packet + rfm73->addrLen, rfm73->recvLen);
+      tmp = skb_put(skb, rfm73->recvLen);
+      /* Read the RX FIFO to skb */
+      rfm73_readFifo(rfm73, tmp, rfm73->recvLen);
+      skb->pkt_type = PACKET_HOST;
+      skb->dev = rfm73->dev;
+      skb->protocol = htons(ETH_P_NONE);
+      skb_reset_mac_header(skb);
+      skb->ip_summed = CHECKSUM_UNNECESSARY;
+      rfm73->dev->stats.rx_bytes += skb->len;
+      rfm73->dev->stats.rx_packets++;
 
-    /* first bytes are SRC address */
-    rfm73->recvLen += rfm73->addrLen;
-    rfm73_recv_packet(rfm73);
+      netif_receive_skb(skb);
+    }
   }
   else if (status & IRQ_TX_DATA_SENT)
   {
@@ -354,7 +326,7 @@ static ssize_t rfm73_initialize(struct rfm73_data *rfm73)
   if (0 == (rfm73->recv[0] & 0x80))
   {
     /* switch to bank1 */
-    rfm73_cmd(rfm73, ACTIVATE, tmp, 1);
+    rfm73_cmd(rfm73, ACTIVATE, tmp, 1, NULL);
   }
   
   /* init bank1 */
@@ -366,14 +338,14 @@ static ssize_t rfm73_initialize(struct rfm73_data *rfm73)
   
   /* toggle to bank 0 */
   tmp = 0x53;
-  rfm73_cmd(rfm73, ACTIVATE, tmp, 1);
+  rfm73_cmd(rfm73, ACTIVATE, tmp, 1, NULL);
   
   rfm73_writeReg(rfm73, FEATURE, 0x01);
   rfm73_readRegs(rfm73, FEATURE, 1);
   if (0 == rfm73->recv[0])
   {
     tmp = 0x73;
-    rfm73_cmd(rfm73, ACTIVATE, tmp, 1);
+    rfm73_cmd(rfm73, ACTIVATE, tmp, 1, NULL);
   }
   
   rfm73_writeReg(rfm73, CONFIG, 0x0F);
@@ -400,14 +372,15 @@ static ssize_t rfm73_initialize(struct rfm73_data *rfm73)
 static int rfm73_set_mac_address(struct net_device *dev, void *addr)
 {
   struct rfm73_data *rfm73 = netdev_priv(dev);
-  uint8_t ptr = rfm73->addrLen;
+  uint8_t ptr = 2;
 
   if (dev->flags & IFF_UP)
   {
     return -EBUSY;
   }
-  memcpy(dev->dev_addr, addr, 14);
-  rfm73_writeRegs(rfm73, RX_ADDR_P0, addr, rfm73->addrLen);
+  memcpy(dev->dev_addr, addr + 2, 10);
+  rfm73_writeRegs(rfm73, RX_ADDR_P0, addr + ptr, rfm73->addrLen);
+  ptr += rfm73->addrLen;
   rfm73_writeRegs(rfm73, RX_ADDR_P1, addr + ptr, rfm73->addrLen);
   ptr += rfm73->addrLen;
   rfm73_writeRegs(rfm73, RX_ADDR_P2, addr + ptr, 1);
@@ -511,7 +484,7 @@ static void dev_setup(struct net_device *dev)
   dev->features |= NETIF_F_HW_CSUM;
   dev->type = ARPHRD_NONE;
   dev->mtu = 32 + 5;
-  dev->addr_len = 1;
+  dev->addr_len = 10;
   dev->tx_queue_len = 100;
   rfm73->dev = dev;
 }
