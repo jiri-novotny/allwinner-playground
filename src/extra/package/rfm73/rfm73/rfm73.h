@@ -3,6 +3,11 @@
 
 #include <linux/sockios.h>
 
+#define EN_DYN_PL             0
+
+#define DEVICE_RX             0x0F
+#define DEVICE_TX             0x0E
+
 #define R_REGISTER            0x00
 #define W_REGISTER            0x20
 #define R_RX_PAYLOAD          0x61
