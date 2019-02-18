@@ -43,11 +43,27 @@ void *recvthr(void *arg)
   pthread_exit(NULL);
 }
 
+unsigned short crc16(const unsigned char* data_p, unsigned char length)
+{
+  unsigned char x;
+  unsigned short crc = 0xFFFF;
+
+  while (length--)
+  {
+    x = crc >> 8 ^ *data_p++;
+    x ^= x>>4;
+    crc = (crc << 8) ^ ((unsigned short)(x << 12)) ^ ((unsigned short)(x <<5)) ^ ((unsigned short)x);
+  }
+  return crc;
+}
+
 int main(int argc, char * argv[])
 {
-  unsigned char txbuf[32] = {0xFF, 0xFF, 0xFF, 0xFF, 0xE7, 0xE7, 0xE7, 0xE7, 0x00, 0x00, 'H', 'E', 'L', 'L', 'O'};
+  unsigned char txbuf[36];
   char *line;
   unsigned int len;
+  unsigned short crc;
+  unsigned int addr;
   pthread_t thr;
   struct ifreq req;
   struct sockaddr_ll sll;
@@ -87,6 +103,7 @@ int main(int argc, char * argv[])
 
   run = 1;
   line = (char *) malloc(80);
+  addr = 0xffffffff;
   pthread_create(&thr, NULL, recvthr, NULL);
   while (run)
   {
@@ -97,12 +114,17 @@ int main(int argc, char * argv[])
     }
     else
     {
-      if (strlen(line) > 0 && strlen(line) < 22)
+      if (strlen(line) > 0 && strlen(line) < 80)
       {
-        line[strlen(line) - 1] = 0;
-        strcpy(txbuf + 10, line);
+        memset(txbuf + 10, 0, 26);
+        sscanf(line, "%08x %s", &addr, txbuf + 12);
+        txbuf[8]++;
+        txbuf[9] = strlen((char *) (txbuf + 12));
       }
-      len = send(sock, txbuf, strlen((char *) txbuf + 10) + 10, 0);
+      memcpy(txbuf, &addr, 4);
+      crc = crc16(txbuf + 4, 30);
+      memcpy(txbuf + 34, &crc, 2);
+      len = send(sock, txbuf, 36, 0);
       if (len >= 0)
       {
         printf("send: %d\n", len);
