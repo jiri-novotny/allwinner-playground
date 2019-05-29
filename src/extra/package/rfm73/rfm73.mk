@@ -4,10 +4,10 @@
 #
 ################################################################################
 
-RFM73_VERSION = 1.0
-RFM73_SOURCE = rfm73-$(RFM73_VERSION).tar.gz
-RFM73_SITE_METHOD = file
-RFM73_SITE = ${BR2_EXTERNAL_EXTRAS_PATH}/package/rfm73
+RFM73_VERSION = f6a06466bc6112dd41c85e4cc0075927bc46fc0f
+RFM73_SITE = $(call github,jiri-novotny,rfm73-linux,$(RFM73_VERSION))
+RFM73_LICENSE = MIT
+RFM73_LICENSE_FILES = LICENSE
 RFM73_DEPENDENCIES = linux
 
 define RFM73_BUILD_CMDS
