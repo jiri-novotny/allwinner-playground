@@ -6,6 +6,7 @@ setenv boot_net_usb_start
 setenv boot_prefixes
 setenv boot_script_dhcp
 setenv boot_scripts
+setenv boot_syslinux_conf
 setenv boot_targets
 setenv bootcmd_dhcp
 setenv bootcmd_fel
@@ -19,6 +20,7 @@ setenv efi_dtb_prefixes
 setenv fdtcontroladdr
 setenv load_efi_dtb
 setenv mmc_boot
+setenv partitions
 setenv pxefile_addr_r
 setenv ramdisk_addr_r
 setenv scan_dev_for_boot
@@ -30,7 +32,10 @@ setenv scriptaddr
 setenv usb_boot
 setenv bootfile zImage
 setenv fdt_high ffffffff
+setenv fdtfile sun8i-h2-plus-orangepi-zero-rfm.dtb
 setenv mmcargs 'setenv bootargs "console=${console} root=/dev/mmcblk0p1 rw rootwait rootfstype=ext4 ${mtdparts}"'
 setenv mmcload 'mmc rescan; load mmc 0 ${kernel_addr_r} /boot/${bootfile}; load mmc 0 ${fdt_addr_r} /boot/${fdtfile};'
 setenv doboot 'bootz ${kernel_addr_r} - ${fdt_addr_r}'
 setenv bootcmd 'run mmcargs; run mmcload; run doboot;'
+
+boot
