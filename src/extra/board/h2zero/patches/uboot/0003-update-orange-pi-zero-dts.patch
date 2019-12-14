@@ -1,0 +1,19 @@
+--- a/arch/arm/dts/sun8i-h2-plus-orangepi-zero.dts
++++ b/arch/arm/dts/sun8i-h2-plus-orangepi-zero.dts
+@@ -59,6 +59,7 @@
+ 		/* ethernet0 is the H3 emac, defined in sun8i-h3.dtsi */
+ 		ethernet0 = &emac;
+ 		ethernet1 = &xr819;
++		spi0 = &spi0;
+ 	};
+ 
+ 	chosen {
+@@ -144,7 +144,7 @@
+ 
+ &spi0 {
+ 	/* Disable SPI NOR by default: it optional on Orange Pi Zero boards */
+-	status = "disabled";
++	status = "okay";
+ 
+ 	flash@0 {
+ 		#address-cells = <1>;

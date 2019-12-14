@@ -1,0 +1,13 @@
+--- a/env/Kconfig
++++ b/env/Kconfig
+@@ -496,8 +496,9 @@
+ config ENV_SECT_SIZE
+ 	hex "Environment Sector-Size"
+-	depends on !ENV_IS_NOWHERE && (ARCH_ZYNQ || ARCH_ZYNQMP)
++	depends on ENV_IS_IN_SPI_FLASH && ARCH_SUNXI
+ 	default 0x40000 if ARCH_ZYNQMP
+ 	default 0x20000 if ARCH_ZYNQ
++	default 0x1000 if ARCH_SUNXI
+ 	help
+ 	  Size of the sector containing the environment.
+ 

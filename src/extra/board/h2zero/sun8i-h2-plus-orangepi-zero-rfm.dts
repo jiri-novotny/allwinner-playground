@@ -168,15 +168,52 @@
 };
 
 &spi0 {
-	/* Disable SPI NOR by default: it optional on Orange Pi Zero boards */
-	status = "disabled";
+	status = "okay";
 
 	flash@0 {
 		#address-cells = <1>;
 		#size-cells = <1>;
-		compatible = "mxicy,mx25l1606e", "winbond,w25q128";
+		compatible = "winbond,w25q128";
 		reg = <0>;
 		spi-max-frequency = <40000000>;
+
+		partition@0 {
+			label = "u-boot";
+			reg = <0x0 0x70000>;
+			read-only;
+		};
+		partition@70000 {
+			label = "u-boot-env1";
+			reg = <0x70000 0x10000>;
+		};
+		partition@80000 {
+			label = "u-boot-env2";
+			reg = <0x80000 0x10000>;
+		};
+		partition@90000 {
+			label = "dtb";
+			reg = <0x90000 0x10000>;
+		};
+		partition@a0000 {
+			label = "kernel";
+			reg = <0xa0000 0x400000>;
+		};
+		partition@4a0000 {
+			label = "rootfs";
+			reg = <0x4a0000 0xB60000>;
+		};
+	};
+};
+
+&spi1 {
+	status = "okay";
+
+	radio@0 {
+		compatible = "hoperf,rfm73";
+		reg = <0>;
+		spi-max-frequency = <8000000>;
+		rfm73,irq = <&pio 0 10 GPIO_ACTIVE_LOW>; /* PA10 */
+		rfm73,ce = <&pio 0 7 GPIO_ACTIVE_HIGH>; /* PA07 */
 	};
 };
 
@@ -211,32 +248,4 @@
 	 */
 	status = "okay";
 	usb0_id_det-gpios = <&pio 6 12 GPIO_ACTIVE_HIGH>; /* PG12 */
-};
-
-&spi0 {
-	status = "okay";
-
-	flash@0 {
-		#address-cells = <1>;
-		#size-cells = <1>;
-		compatible = "mxicy,mx25l1606e", "winbond,w25q128";
-		reg = <0>;
-		spi-max-frequency = <40000000>;
-
-		partition@00000000 {
-			reg = <0x00000000 0x200000>;	/* 2Mb */
-		};
-	};
-};
-
-&spi1 {
-	status = "okay";
-
-	radio@0 {
-		compatible = "hoperf,rfm73";
-		reg = <0>;
-		spi-max-frequency = <8000000>;
-		rfm73,irq = <&pio 0 10 GPIO_ACTIVE_LOW>; /* PA10 */
-		rfm73,ce = <&pio 0 7 GPIO_ACTIVE_HIGH>; /* PA07 */
-	};
 };
