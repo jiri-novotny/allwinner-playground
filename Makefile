@@ -12,7 +12,7 @@ BUILDROOT_BRANCH=master
 BUILDROOT_RELEASE=buildroot-2019.11
 
 # you current project name
-PROJECT?=a13som_audio
+PROJECT?=h2zero
 DEFCONFIG?=$(PROJECT)_defconfig
 DEPLOY_UBOOT_MBR?=0
 
