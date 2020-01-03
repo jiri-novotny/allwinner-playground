@@ -1,0 +1,13 @@
+mkdir -p /data/ro
+mkdir /data/overlay
+mount -o noatime /dev/mmcblk0p2 /data/overlay
+mkdir /data/overlay/upper
+mkdir /data/overlay/work
+mount -o noatime,lowerdir=/,upperdir=/data/overlay/upper,workdir=/data/overlay/work -t overlay "overlayfs:/data" /mnt
+mount -o noatime,move /proc /mnt/proc
+pivot_root /mnt /mnt/data/ro
+mount -o noatime,move /data/ro/dev /dev
+mount -o noatime,move /data/ro/run /run
+mount -o noatime,move /data/ro/tmp /tmp
+mount -o noatime,move /data/ro/sys /sys 2>&-
+mount -o noatime,move /data/ro/data/overlay /data/overlay 2>&-

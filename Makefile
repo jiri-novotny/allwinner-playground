@@ -35,7 +35,7 @@ SRC_PATH=src
 .PHONY: prepare
 
 # Do not build "linux" by default since it is already built as part of Buildroot
-all: prepare toolchain defconfig image
+all: prepare defconfig image
 
 prepare:
 	if [ ! -d $(SRC_PATH)/buildroot ]; then \
