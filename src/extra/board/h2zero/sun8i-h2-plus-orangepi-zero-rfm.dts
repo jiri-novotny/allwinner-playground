@@ -70,14 +70,15 @@
 		compatible = "gpio-leds";
 
 		pwr_led {
-			label = "orangepi:green:pwr";
+			label = "green";
 			gpios = <&r_pio 0 10 GPIO_ACTIVE_HIGH>;
 			default-state = "on";
 		};
 
 		status_led {
-			label = "orangepi:red:status";
+			label = "red";
 			gpios = <&pio 0 17 GPIO_ACTIVE_HIGH>;
+			linux,default-trigger = "heartbeat";
 		};
 	};
 
