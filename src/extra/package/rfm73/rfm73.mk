@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-RFM73_VERSION = f6a06466bc6112dd41c85e4cc0075927bc46fc0f
+RFM73_VERSION = 0f6f82b24cba6061f3c5f958a48aa2f93b203567
 RFM73_SITE = $(call github,jiri-novotny,rfm73-linux,$(RFM73_VERSION))
 RFM73_LICENSE = MIT
 RFM73_LICENSE_FILES = LICENSE
