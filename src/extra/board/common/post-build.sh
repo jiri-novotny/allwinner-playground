@@ -7,8 +7,10 @@ echo HOST_KERNEL_VERSION=`uname -v` >> ${TARGET_DIR}/etc/build
 echo BUILD_DATE=`date -R` >> ${TARGET_DIR}/etc/build
 
 # buildroot extra tools
-cp ${BUILD_DIR}/binutils*/binutils/objdump ${TARGET_DIR}/usr/bin
-cp ${STAGING_DIR}/usr/lib/libopcodes-*.so ${TARGET_DIR}/usr/lib
+if [ -f ${BUILD_DIR}/binutils*/binutils/objdump ]; then
+  cp ${BUILD_DIR}/binutils*/binutils/objdump ${TARGET_DIR}/usr/bin
+  cp ${STAGING_DIR}/usr/lib/libopcodes-*.so ${TARGET_DIR}/usr/lib
+fi
 
 # remove links from target fs
 if [ -f ${TARGET_DIR}/linuxrc ]; then
