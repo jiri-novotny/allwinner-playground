@@ -1,0 +1,11 @@
+--- a/arch/arm/dts/sunxi-u-boot.dtsi
++++ a/arch/arm/dts/sunxi-u-boot.dtsi
+@@ -2,7 +2,7 @@
+ 
+ / {
+ 	aliases {
+-		mmc1 = &mmc2;
++		mmc1 = &mmc0;
+ 	};
+ 
+ 	binman {
