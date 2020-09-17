@@ -1,0 +1,92 @@
+#!/bin/sh
+#
+# Generate USB device
+#
+
+# general parameters
+VID=0x1781
+PID=0x0d00
+PRODUCT_NAME="NanoGadget"
+DRIVE_NAME=UPDATE
+UPDSIZE=4
+FILE_PATH=/run/update.img
+
+HIDCOMD_PATH=/opt/hidcomd
+USB_NAME=usb0
+UDC_NAME=musb-hdrc.1.auto
+CONFIG_PATH=/sys/kernel/config
+
+start() {
+  echo "Creating USB temp FS..."
+  if [ ! -e ${FILE_PATH} ]; then
+    dd if=/dev/zero of=${FILE_PATH} bs=1M count=$UPDSIZE
+    losetup -f ${FILE_PATH}
+    mkfs.vfat -n ${DRIVE_NAME} /dev/loop0
+  fi
+
+  echo "Configuring USB device..."
+
+  mkdir ${CONFIG_PATH}/usb_gadget/licheenano
+  echo ${VID} > ${CONFIG_PATH}/usb_gadget/licheenano/idVendor
+  echo ${PID} > ${CONFIG_PATH}/usb_gadget/licheenano/idProduct
+  mkdir ${CONFIG_PATH}/usb_gadget/licheenano/strings/0x409
+  echo "Lichee Nano" > ${CONFIG_PATH}/usb_gadget/licheenano/strings/0x409/manufacturer
+  echo ${PRODUCT_NAME} > ${CONFIG_PATH}/usb_gadget/licheenano/strings/0x409/product
+
+  # new configuration
+  mkdir ${CONFIG_PATH}/usb_gadget/licheenano/configs/c.1
+  mkdir ${CONFIG_PATH}/usb_gadget/licheenano/configs/c.1/strings/0x409
+  echo "config" > ${CONFIG_PATH}/usb_gadget/licheenano/configs/c.1/strings/0x409/configuration
+  echo 50 > ${CONFIG_PATH}/usb_gadget/licheenano/configs/c.1/MaxPower
+
+  # HID function
+  mkdir ${CONFIG_PATH}/usb_gadget/licheenano/functions/hid.${USB_NAME}
+  echo 0 > ${CONFIG_PATH}/usb_gadget/licheenano/functions/hid.${USB_NAME}/protocol
+  echo 0 > ${CONFIG_PATH}/usb_gadget/licheenano/functions/hid.${USB_NAME}/subclass
+  echo 32 > ${CONFIG_PATH}/usb_gadget/licheenano/functions/hid.${USB_NAME}/report_length
+  echo -ne \\x06\\x00\\xff\\x09\\x01\\xa1\\x01\\x15\\x00\\x25\\xff\\x75\\x08\\x95\\x20\\x09\\x01\\x81\\x02\\x95\\x20\\x09\\x01\\x91\\x02\\xc0 > ${CONFIG_PATH}/usb_gadget/licheenano/functions/hid.${USB_NAME}/report_desc
+
+  # Net function
+  mkdir ${CONFIG_PATH}/usb_gadget/licheenano/functions/rndis.${USB_NAME}
+
+  # MSC function
+#  mkdir ${CONFIG_PATH}/usb_gadget/licheenano/functions/mass_storage.${USB_NAME}
+#  echo $FILE_PATH > ${CONFIG_PATH}/usb_gadget/licheenano/functions/mass_storage.${USB_NAME}/lun.0/file
+
+  # add function to descriptor
+  ln -s ${CONFIG_PATH}/usb_gadget/licheenano/functions/rndis.${USB_NAME} ${CONFIG_PATH}/usb_gadget/licheenano/configs/c.1
+  ln -s ${CONFIG_PATH}/usb_gadget/licheenano/functions/hid.${USB_NAME} ${CONFIG_PATH}/usb_gadget/licheenano/configs/c.1
+#  ln -s ${CONFIG_PATH}/usb_gadget/licheenano/functions/mass_storage.${USB_NAME} ${CONFIG_PATH}/usb_gadget/licheenano/configs/c.1
+
+  echo "Starting USB device..."
+  echo ${UDC_NAME} > ${CONFIG_PATH}/usb_gadget/licheenano/UDC
+
+  echo "Starting HID command receiver..."
+  ${HIDCOMD_PATH}
+}
+
+restart() {
+  stop
+  start
+}
+
+case "$1" in
+  start)
+    start
+  ;;
+  stop)
+    echo "Stopping HID command receiver..."
+    killall hidcomd
+    echo "Stopping USB gadget..."
+    echo "" > ${CONFIG_PATH}/usb_gadget/licheenano/UDC
+    rm -rf ${CONFIG_PATH}/usb_gadget/licheenano > /dev/null 2>&1
+  ;;
+  restart|reload)
+    restart
+  ;;
+  *)
+    echo "Usage: $0 {start|restart|stop}"
+    exit 1
+esac
+
+exit $?
