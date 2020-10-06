@@ -77,8 +77,8 @@ index a1154e6c7..3bd12f031 100644
  };
 +
 +&usb_otg {
-+	status = "okay";
 +	dr_mode = "peripheral";
++	status = "okay";
 +};
 +
 +&usbphy {
@@ -438,7 +438,7 @@ index 651d5e2a2..8cad6a4a2 100644
  	sun4i_a10_phy,
  	sun6i_a31_phy,
  	sun8i_a33_phy,
-@@ -861,6 +862,14 @@ static int sun4i_usb_phy_probe(struct platform_device *pdev)
+@@ -861,6 +862,16 @@ static int sun4i_usb_phy_probe(struct platform_device *pdev)
  	return 0;
  }
  
@@ -446,8 +446,10 @@ index 651d5e2a2..8cad6a4a2 100644
 +	.num_phys = 1,
 +	.type = suniv_f1c100s_phy,
 +	.disc_thresh = 3,
-+	.phyctl_offset = REG_PHYCTL_A10,
++	.phyctl_offset = REG_PHYCTL_A33,
 +	.dedicated_clocks = true,
++	.enable_pmu_unk1 = false,
++	.phy0_dual_route = true,
 +};
 +
  static const struct sun4i_usb_phy_cfg sun4i_a10_cfg = {
