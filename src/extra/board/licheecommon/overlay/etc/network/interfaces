@@ -2,6 +2,5 @@ auto lo
 iface lo inet loopback
 iface usb0 inet static
   address 192.0.2.1
-  netstat 255.255.255.0
+  netmask 255.255.255.0
   gateway 192.0.2.254
-  

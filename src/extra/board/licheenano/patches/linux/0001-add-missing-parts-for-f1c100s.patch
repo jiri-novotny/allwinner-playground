@@ -449,7 +449,7 @@ index 651d5e2a2..8cad6a4a2 100644
 +	.phyctl_offset = REG_PHYCTL_A33,
 +	.dedicated_clocks = true,
 +	.enable_pmu_unk1 = false,
-+	.phy0_dual_route = true,
++	.phy0_dual_route = false,
 +};
 +
  static const struct sun4i_usb_phy_cfg sun4i_a10_cfg = {

@@ -76,6 +76,17 @@
 	};
 };
 
+&i2c0 {
+	pinctrl-0 = <&i2c0_pins>;
+	pinctrl-names = "default";
+	status = "okay";
+
+	temp: sht21@40 {
+ 		compatible = "sensirion,sht21";
+ 		reg = <0x40>;
+	};
+};
+
 &mmc0 {
 	broken-cd;
 	bus-width = <4>;
