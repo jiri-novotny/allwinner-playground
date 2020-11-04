@@ -1,9 +1,9 @@
 --- a/configs/orangepi_zero_defconfig
 +++ b/configs/orangepi_zero_defconfig
-@@ -16,3 +16,19 @@
+@@ -11,3 +11,19 @@
+ CONFIG_SUN8I_EMAC=y
  CONFIG_USB_EHCI_HCD=y
  CONFIG_USB_OHCI_HCD=y
- CONFIG_SYS_USB_EVENT_POLL_VIA_INT_QUEUE=y
 +CONFIG_CMD_SF=y
 +CONFIG_CMD_SPI=y
 +CONFIG_SPI=y
