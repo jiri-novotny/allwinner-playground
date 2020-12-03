@@ -1,0 +1,36 @@
+#!/bin/sh
+#
+# Enable LED HB network
+#
+
+start() {
+  echo timer > /sys/class/leds/green/trigger
+  echo 4975 > /sys/class/leds/green/delay_off
+  echo 25 > /sys/class/leds/green/delay_on
+}
+
+stop() {
+  echo none > /sys/class/leds/green/trigger
+}
+
+restart() {
+  stop
+  start
+}
+
+case "$1" in
+  start)
+    start
+  ;;
+  stop)
+    stop
+  ;;
+  restart|reload)
+    restart
+  ;;
+  *)
+    echo "Usage: $0 {start|restart|stop}"
+    exit 1
+esac
+
+exit $?

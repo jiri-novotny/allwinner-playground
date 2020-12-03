@@ -70,14 +70,15 @@
 		compatible = "gpio-leds";
 
 		pwr_led {
-			label = "orangepi:green:pwr";
+			label = "green";
 			gpios = <&r_pio 0 10 GPIO_ACTIVE_HIGH>;
 			default-state = "on";
 		};
 
 		status_led {
-			label = "orangepi:red:status";
+			label = "red";
 			gpios = <&pio 0 17 GPIO_ACTIVE_HIGH>;
+			linux,default-trigger = "heartbeat";
 		};
 	};
 
@@ -118,6 +119,7 @@
 		"Line Out", "LINEOUT",
 		"MIC1", "Mic",
 		"Mic",  "MBIAS";
+	allwinner,pa-gpios = <&pio 0 10 GPIO_ACTIVE_HIGH>;
 	status = "okay";
 };
 
@@ -174,19 +176,6 @@
 	status = "okay";
 };
 
-&spi0 {
-	/* Disable SPI NOR by default: it optional on Orange Pi Zero boards */
-	status = "disabled";
-
-	flash@0 {
-		#address-cells = <1>;
-		#size-cells = <1>;
-		compatible = "mxicy,mx25l1606e", "winbond,w25q128";
-		reg = <0>;
-		spi-max-frequency = <40000000>;
-	};
-};
-
 &uart0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&uart0_pa_pins>;
@@ -226,22 +215,34 @@
 	flash@0 {
 		#address-cells = <1>;
 		#size-cells = <1>;
-		compatible = "mxicy,mx25l1606e", "winbond,w25q128";
+		compatible = "winbond,w25q128";
 		reg = <0>;
-		spi-max-frequency = <40000000>;
+		spi-max-frequency = <80000000>;
 
-		partition@00000000 {
-			reg = <0x00000000 0x200000>;	/* 2Mb */
+		partition@0 {
+			label = "u-boot";
+			reg = <0x0 0x70000>;
+			read-only;
 		};
-	};
-};
-
-&spi1 {
-	status = "okay";
-
-	spidev@0 {
-		compatible = "rohm,dh2228fv";
-		reg = <0>;
-		spi-max-frequency = <10000000>;
+		partition@70000 {
+			label = "u-boot-env1";
+			reg = <0x70000 0x10000>;
+		};
+		partition@80000 {
+			label = "u-boot-env2";
+			reg = <0x80000 0x10000>;
+		};
+		partition@90000 {
+			label = "dtb";
+			reg = <0x90000 0x10000>;
+		};
+		partition@a0000 {
+			label = "kernel";
+			reg = <0xa0000 0x600000>;
+		};
+		partition@4c0000 {
+			label = "rootfs";
+			reg = <0x4c0000 0xB60000>;
+		};
 	};
 };

@@ -1,0 +1,19 @@
+--- a/arch/arm/boot/dts/suniv-f1c100s.dtsi
++++ b/arch/arm/boot/dts/suniv-f1c100s.dtsi
+@@ -202,6 +202,16 @@
+ 			#interrupt-cells = <3>;
+ 			#gpio-cells = <3>;
+ 
++			i2c0_pins_a: i2c0-pins-pd {
++				pins = "PD0", "PD12";
++				function = "i2c0";
++			};
++
++			i2c0_pins_b: i2c0-pins-pe {
++				pins = "PE11", "PE12";
++				function = "i2c0";
++			};
++
+ 			spi0_pins_a: spi0-pins-pc {
+ 				pins = "PC0", "PC1", "PC2", "PC3";
+ 				function = "spi0";

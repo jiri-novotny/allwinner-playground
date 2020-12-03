@@ -1,0 +1,20 @@
+--- a/arch/arm/boot/dts/suniv-f1c100s-licheepi-nano.dts
++++ b/arch/arm/boot/dts/suniv-f1c100s-licheepi-nano.dts
+@@ -26,6 +26,17 @@
+ 	};
+ };
+ 
++&i2c0 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&i2c0_pins_b>;
++	status = "okay";
++
++	temp: sht21@40 {
++ 		compatible = "sensirion,sht21";
++ 		reg = <0x40>;
++	};
++};
++
+ &mmc0 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&mmc0_pins>;

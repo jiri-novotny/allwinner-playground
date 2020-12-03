@@ -1,0 +1,25 @@
+#!/bin/sh
+
+DDS_ID=$1
+LOOP=$2
+
+if [ $# -lt 1 ]; then
+  echo "USAGE: $0 [LOOPS] <DDS_ID> <DDS_IP:PORT>"
+  exit 1
+fi
+
+if [ $# -gt 2 ]; then
+  SERVER=$3
+else
+  SERVER=192.168.1.16:20000
+fi
+
+for i in `seq 1 1 $LOOP`; do
+  T=`cat /sys/class/hwmon/hwmon0/temp1_input`
+  H=`cat /sys/class/hwmon/hwmon0/humidity1_input`
+  if [ ! "$DDS_ID" == "" ]; then
+    echo $DDS_ID:{temp:$T,hum:$H} | socat -t 0 - UDP4-DATAGRAM:$SERVER
+  else
+    echo {temp:$T,hum:$H}
+  fi
+done
