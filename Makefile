@@ -22,11 +22,10 @@ MOUNT_PATH=/mnt
 # you probably dont want to change buildroot source url
 BUILDROOT_GIT=git://git.buildroot.net/buildroot
 BUILDROOT_URL=https://buildroot.org/downloads/$(BUILDROOT_RELEASE).tar.gz
-TOOLCHAIN_RELEASE=gcc-linaro-6.5.0-2018.12-x86_64_arm-linux-gnueabihf
-TOOLCHAIN_URL=https://releases.linaro.org/components/toolchain/binaries/6.5-2018.12/arm-linux-gnueabihf/$(TOOLCHAIN_RELEASE).tar.xz
-TOOLCHAIN64_RELEASE=gcc-linaro-6.5.0-2018.12-x86_64_aarch64-linux-gnu
-TOOLCHAIN64_URL=https://releases.linaro.org/components/toolchain/binaries/6.5-2018.12/aarch64-linux-gnu/$(TOOLCHAIN64_RELEASE).tar.xz
-
+TOOLCHAIN_RELEASE=armv7-eabihf--musl--stable-2020.08-1
+TOOLCHAIN_URL=https://toolchains.bootlin.com/downloads/releases/toolchains/armv7-eabihf/tarballs/$(TOOLCHAIN_RELEASE).tar.bz2
+TOOLCHAIN64_RELEASE=aarch64--glibc--stable-2020.08-1
+TOOLCHAIN64_URL=https://toolchains.bootlin.com/downloads/releases/toolchains/aarch64/tarballs/$(TOOLCHAIN64_RELEASE).tar.bz2
 # dont edit after this line
 BUILD_PATH=$(PROJECT)
 EXTRA_PATH=extra
@@ -37,7 +36,7 @@ SRC_PATH=src
 # Do not build "linux" by default since it is already built as part of Buildroot
 all: prepare defconfig image
 
-prepare:
+prepare: toolchain
 	if [ ! -d $(SRC_PATH)/buildroot ]; then \
 		if [ $(BUILDROOT_USE_GIT) -eq 0 ]; then \
 			wget -O /tmp/buildroot.tar.gz $(BUILDROOT_URL); \
@@ -50,15 +49,15 @@ prepare:
 
 toolchain:
 	if [ ! -d $(SRC_PATH)/toolchain ]; then \
-		wget -O /tmp/toolchain.tar.xz $(TOOLCHAIN_URL); \
-		tar xf /tmp/toolchain.tar.xz -C /tmp; \
+		wget -O /tmp/toolchain.tar.bz2 $(TOOLCHAIN_URL); \
+		tar xf /tmp/toolchain.tar.bz2 -C /tmp; \
 		mv /tmp/$(TOOLCHAIN_RELEASE) $(SRC_PATH)/toolchain; \
 	fi
 
 toolchain64:
 	if [ ! -d $(SRC_PATH)/toolchain64 ]; then \
-		wget -O /tmp/toolchain64.tar.xz $(TOOLCHAIN64_URL); \
-		tar xf /tmp/toolchain64.tar.xz -C /tmp; \
+		wget -O /tmp/toolchain64.tar.bz2 $(TOOLCHAIN64_URL); \
+		tar xf /tmp/toolchain64.tar.bz2 -C /tmp; \
 		mv /tmp/$(TOOLCHAIN64_RELEASE) $(SRC_PATH)/toolchain64; \
 	fi
 
