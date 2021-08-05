@@ -9,7 +9,7 @@ BUILDROOT_USE_GIT=0
 # you can set buildroot git version (branch or tag)
 BUILDROOT_BRANCH=master
 # you can set buildroot static version
-BUILDROOT_RELEASE=buildroot-2020.11.2
+BUILDROOT_RELEASE=buildroot-2021.05
 
 # you current project name
 PROJECT?=h2zero
@@ -45,6 +45,7 @@ prepare: toolchain
 		else \
 			git clone -b $(BUILDROOT_BRANCH) $(BUILDROOT_GIT) $(SRC_PATH)/buildroot; \
 		fi; \
+		patch -p1 < $(SRC_PATH)/patches/0001-update-rtty.patch; \
 	fi
 
 toolchain:

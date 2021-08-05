@@ -1,0 +1,17 @@
+--- a/src/buildroot/package/rtty/rtty.hash
++++ b/src/buildroot/package/rtty/rtty.hash
+@@ -1,2 +1,2 @@
+-sha256  4c60eacd7a653988a1907284de2ecf360c74f55ef9e21c40b9ebd87af6570908  rtty-7.3.2.tar.gz
++sha256  3b2cda6259d3d14a36c7410b845f76df0dd838b82cc112f3b77ef66ef5e575e5  rtty-7.4.2.tar.gz
+ sha256  99efed4bbc0b62f96f999ef23399e38234fb91651af734fd389a52b033a85b55  LICENSE
+--- a/src/buildroot/package/rtty/rtty.mk
++++ b/src/buildroot/package/rtty/rtty.mk
+@@ -4,7 +4,7 @@
+ #
+ ################################################################################
+ 
+-RTTY_VERSION = 7.3.2
++RTTY_VERSION = 7.4.2
+ RTTY_SITE = https://github.com/zhaojh329/rtty/releases/download/v$(RTTY_VERSION)
+ RTTY_LICENSE = MIT
+ RTTY_LICENSE_FILES = LICENSE
