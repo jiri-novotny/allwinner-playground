@@ -1,0 +1,36 @@
+#!/bin/sh
+#
+# wpa_supplicant
+#
+
+start() {
+  wpa_supplicant -Dwext -c /etc/wpa_supplicant.conf -iwlan0 -B
+  udhcpc -i wlan0 -b -p /var/run/udhcpc.wlan0.pid -t 1 -R
+}
+
+stop() {
+  kill `cat /var/run/udhcpc.wlan0.pid`
+  wpa_cli -iwlan0 terminate
+}
+
+restart() {
+  stop
+  start
+}
+
+case "$1" in
+  start)
+    start
+  ;;
+  stop)
+    stop
+  ;;
+  restart|reload)
+    restart
+  ;;
+  *)
+    echo "Usage: $0 {start|restart|stop}"
+    exit 1
+esac
+
+exit $?
