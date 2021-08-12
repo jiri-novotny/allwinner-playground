@@ -4,8 +4,21 @@
 #
 
 start() {
-  wpa_supplicant -Dwext -c /etc/wpa_supplicant.conf -iwlan0 -B
-  udhcpc -i wlan0 -b -p /var/run/udhcpc.wlan0.pid -t 1 -R
+  TIMEOUT=0
+  RET=`ip link show dev wlan0 | wc -l`
+  while [ $RET -eq 0 ]; do
+    [ $TIMEOUT -eq 10 ] && RET=1 || {
+      TIMEOUT=$((TIMEOUT+1))
+      usleep 200000
+      RET=`ip link show dev wlan0 | wc -l`
+    }
+  done
+  if [ $RET -ge 2 ]; then
+    wpa_supplicant -Dnl80211 -c /etc/wpa_supplicant.conf -iwlan0 -B
+    udhcpc -i wlan0 -b -p /var/run/udhcpc.wlan0.pid -t 1 -R
+  else
+    logger WiFi not found!
+  fi
 }
 
 stop() {

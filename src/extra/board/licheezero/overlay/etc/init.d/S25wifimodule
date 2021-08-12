@@ -1,14 +1,14 @@
 #!/bin/sh
 #
-# Load WLAN module 
+# Load WiFi driver 
 #
 
 start() {
-  modprobe r8188eu
+  modprobe rtl8812au
 }
 
 stop() {
-  rmmod r8188eu
+  rmmod rtl8812au
 }
 
 restart() {
