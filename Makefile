@@ -9,10 +9,10 @@ BUILDROOT_USE_GIT=0
 # you can set buildroot git version (branch or tag)
 BUILDROOT_BRANCH=master
 # you can set buildroot static version
-BUILDROOT_RELEASE=buildroot-2021.05
+BUILDROOT_RELEASE=buildroot-2021.08-rc1
 
 # you current project name
-PROJECT?=h2zero
+PROJECT?=licheezero
 DEFCONFIG?=$(PROJECT)_defconfig
 DEPLOY_UBOOT_MBR?=0
 
@@ -46,6 +46,7 @@ prepare: toolchain
 			git clone -b $(BUILDROOT_BRANCH) $(BUILDROOT_GIT) $(SRC_PATH)/buildroot; \
 		fi; \
 		patch -p1 < $(SRC_PATH)/patches/0001-update-rtty.patch; \
+		patch -p1 < $(SRC_PATH)/patches/0002-add-wireless-regdb-linux-dep.patch; \
 	fi
 
 toolchain:
