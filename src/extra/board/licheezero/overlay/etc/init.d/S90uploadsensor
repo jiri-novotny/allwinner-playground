@@ -1,0 +1,38 @@
+#!/bin/sh
+#
+# Enable sensors
+#
+
+SENSOR_DELAY=120
+
+[ -e /etc/default/uploadsensor ] && . /etc/default/uploadsensor
+
+start() {
+  while [ 1 ]; do uploadsensor $SENSOR_ID 1 ${SENSOR_HOST}:${SENSOR_PORT}; sleep $SENSOR_DELAY; done > /dev/null &
+}
+
+stop() {
+  echo none > /sys/class/leds/green/trigger
+}
+
+restart() {
+  stop
+  start
+}
+
+case "$1" in
+  start)
+    start
+  ;;
+  stop)
+    stop
+  ;;
+  restart|reload)
+    restart
+  ;;
+  *)
+    echo "Usage: $0 {start|restart|stop}"
+    exit 1
+esac
+
+exit $?
