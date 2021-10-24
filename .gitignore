@@ -11,3 +11,4 @@ src/uboot*/
 /licheenano/
 /licheezero/
 /raspi/
+**/etc/default/*

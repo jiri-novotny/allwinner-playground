@@ -1,0 +1,34 @@
+#!/bin/sh
+#
+# Load WiFi driver 
+#
+
+start() {
+  modprobe xradio_wlan
+}
+
+stop() {
+  rmmod xradio_wlan
+}
+
+restart() {
+  stop
+  start
+}
+
+case "$1" in
+  start)
+    start
+  ;;
+  stop)
+    stop
+  ;;
+  restart|reload)
+    restart
+  ;;
+  *)
+    echo "Usage: $0 {start|restart|stop}"
+    exit 1
+esac
+
+exit $?

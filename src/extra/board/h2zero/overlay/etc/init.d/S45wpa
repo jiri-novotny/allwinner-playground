@@ -1,0 +1,49 @@
+#!/bin/sh
+#
+# wpa_supplicant
+#
+
+start() {
+  TIMEOUT=0
+  RET=`ip link show dev wlan0 | wc -l`
+  while [ $RET -eq 0 ]; do
+    [ $TIMEOUT -eq 10 ] && RET=1 || {
+      TIMEOUT=$((TIMEOUT+1))
+      usleep 200000
+      RET=`ip link show dev wlan0 | wc -l`
+    }
+  done
+  if [ $RET -ge 2 ]; then
+    wpa_supplicant -Dnl80211 -c /etc/wpa_supplicant.conf -iwlan0 -B
+    udhcpc -i wlan0 -b -p /var/run/udhcpc.wlan0.pid -t 1 -R
+  else
+    logger WiFi not found!
+  fi
+}
+
+stop() {
+  kill `cat /var/run/udhcpc.wlan0.pid`
+  wpa_cli -iwlan0 terminate
+}
+
+restart() {
+  stop
+  start
+}
+
+case "$1" in
+  start)
+    start
+  ;;
+  stop)
+    stop
+  ;;
+  restart|reload)
+    restart
+  ;;
+  *)
+    echo "Usage: $0 {start|restart|stop}"
+    exit 1
+esac
+
+exit $?

@@ -1,0 +1,38 @@
+#!/bin/sh
+
+start() {
+  logger "Starting apps..."
+
+  # start cron
+  mkdir -p /var/spool/cron/crontabs
+  cp /etc/crond/* /var/spool/cron/crontabs
+  crond
+}
+
+stop() {
+  killall crond
+  rm -rf /var/spool/cron
+}
+
+restart() {
+  stop
+  sleep 1
+  start
+}
+
+case "$1" in
+  start)
+    start
+  ;;
+  stop)
+    stop
+  ;;
+  restart|reload)
+    restart
+  ;;
+  *)
+    echo "Usage: $0 {start|restart|stop}"
+    exit 1
+esac
+
+exit $?
