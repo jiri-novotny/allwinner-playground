@@ -1,6 +1,6 @@
 --- a/configs/orangepi_zero_defconfig
 +++ b/configs/orangepi_zero_defconfig
-@@ -11,3 +11,19 @@
+@@ -11,3 +11,18 @@
  CONFIG_SUN8I_EMAC=y
  CONFIG_USB_EHCI_HCD=y
  CONFIG_USB_OHCI_HCD=y
@@ -18,6 +18,5 @@
 +CONFIG_ENV_IS_IN_SPI_FLASH=y
 +CONFIG_ENV_SECT_SIZE=0x1000
 +CONFIG_ENV_SIZE=0x10000
-+CONFIG_ENV_OFFSET=0x70000
-+CONFIG_ENV_OFFSET_REDUND=0x80000
++CONFIG_ENV_OFFSET=0x80000
 \ No newline at end of file

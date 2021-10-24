@@ -9,7 +9,7 @@ BUILDROOT_USE_GIT=0
 # you can set buildroot git version (branch or tag)
 BUILDROOT_BRANCH=master
 # you can set buildroot static version
-BUILDROOT_RELEASE=buildroot-2021.08-rc1
+BUILDROOT_RELEASE=buildroot-2021.08.1
 
 # you current project name
 PROJECT?=licheezero
