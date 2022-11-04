@@ -233,11 +233,11 @@
 		};
 		partition@a0000 {
 			label = "kernel";
-			reg = <0xa0000 0x400000>;
+			reg = <0xa0000 0x500000>;
 		};
 		partition@4a0000 {
 			label = "rootfs";
-			reg = <0x4a0000 0xB60000>;
+			reg = <0x5a0000 0xA60000>;
 		};
 	};
 };
@@ -246,10 +246,10 @@
 	status = "okay";
 
 	radio@0 {
-		compatible = "hoperf,rfm73";
+		compatible = "stm,s2lp";
 		reg = <0>;
 		spi-max-frequency = <8000000>;
-		rfm73,irq = <&pio 0 10 GPIO_ACTIVE_LOW>; /* PA10 */
-		rfm73,ce = <&pio 0 7 GPIO_ACTIVE_HIGH>; /* PA07 */
+		s2lp,irq = <&pio 0 10 GPIO_ACTIVE_LOW>; /* PA10 */
+		s2lp,shdn = <&pio 0 7 GPIO_ACTIVE_HIGH>; /* PA07 */
 	};
 };

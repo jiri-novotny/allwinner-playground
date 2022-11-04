@@ -150,10 +150,21 @@
 
 &spi0 {
 	status = "okay";
-
+#if 1
 	radio@0 {
-		compatible = "ge,achc";
+		compatible = "rohm,dh2228fv";
+		reg = <0>;
+		spi-max-frequency = <20000000>;
+	};
+#else
+	radio@0 {
+		compatible = "stm,s2lp";
 		reg = <0>;
 		spi-max-frequency = <8000000>;
+
+		s2lp,irq = <&pio 6 4 0>;
+		s2lp,shdn = <&pio 6 3 0>;
+		s2lp,xtal = <52000000>;
 	};
+#endif
 };

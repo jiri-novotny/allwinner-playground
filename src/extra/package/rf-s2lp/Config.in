@@ -1,0 +1,10 @@
+comment "rf-s2lp-ja needs a Linux kernel to be built"
+	depends on BR2_arm
+	depends on !BR2_LINUX_KERNEL
+
+config BR2_PACKAGE_RF_S2LP
+	bool "rf-s2lp"
+	depends on BR2_LINUX_KERNEL && BR2_arm
+	select BR2_LINUX_NEEDS_MODULES
+	help
+	  Kernel module for STM S2-LP.

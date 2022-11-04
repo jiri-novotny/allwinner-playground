@@ -9,10 +9,10 @@ BUILDROOT_USE_GIT=0
 # you can set buildroot git version (branch or tag)
 BUILDROOT_BRANCH=master
 # you can set buildroot static version
-BUILDROOT_RELEASE=buildroot-2021.08.1
+BUILDROOT_RELEASE=buildroot-2022.08
 
 # you current project name
-PROJECT?=licheezero
+PROJECT?=h2zero
 DEFCONFIG?=$(PROJECT)_defconfig
 DEPLOY_UBOOT_MBR?=0
 
@@ -22,9 +22,9 @@ MOUNT_PATH=/mnt
 # you probably dont want to change buildroot source url
 BUILDROOT_GIT=git://git.buildroot.net/buildroot
 BUILDROOT_URL=https://buildroot.org/downloads/$(BUILDROOT_RELEASE).tar.gz
-TOOLCHAIN_RELEASE=armv7-eabihf--musl--stable-2020.08-1
+TOOLCHAIN_RELEASE=armv7-eabihf--musl--stable-2021.11-1
 TOOLCHAIN_URL=https://toolchains.bootlin.com/downloads/releases/toolchains/armv7-eabihf/tarballs/$(TOOLCHAIN_RELEASE).tar.bz2
-TOOLCHAIN64_RELEASE=aarch64--glibc--stable-2020.08-1
+TOOLCHAIN64_RELEASE=aarch64--musl--stable-2021.11-1
 TOOLCHAIN64_URL=https://toolchains.bootlin.com/downloads/releases/toolchains/aarch64/tarballs/$(TOOLCHAIN64_RELEASE).tar.bz2
 # dont edit after this line
 BUILD_PATH=$(PROJECT)
@@ -46,7 +46,6 @@ prepare: toolchain
 			git clone -b $(BUILDROOT_BRANCH) $(BUILDROOT_GIT) $(SRC_PATH)/buildroot; \
 		fi; \
 		patch -p1 < $(SRC_PATH)/patches/0001-update-rtty.patch; \
-		patch -p1 < $(SRC_PATH)/patches/0002-add-wireless-regdb-linux-dep.patch; \
 	fi
 
 toolchain:
@@ -168,7 +167,9 @@ projects:
 	# a13som_audio           - audio server on Olimex A13 SoM
 	# espresso               - Marvell EspressoBin testing image
 	# h2zero                 - Orange Pi Zero testing image
-	# mxsystem               - MX testing image
+	# h2audio                - Orange Pi Zero audio box
+	# licheenano             - Lichee Pi Nano testing image
+	# licheezero             - Lichee Pi Zero testing image
 	# raspi                  - Raspberry Pi 3 testing image
 	#
 	# Usage: PROJECT=h2zero make

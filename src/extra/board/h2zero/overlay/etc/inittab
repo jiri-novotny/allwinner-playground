@@ -15,7 +15,7 @@
 
 # Startup the system
 ::sysinit:/bin/mount -t proc proc /proc
-::sysinit:/bin/mount -o noatime /dev/mmcblk0p2 /data/overlay
+::sysinit:/bin/mount -o noatime /dev/mmcblk0p1 /data/overlay
 ::sysinit:/bin/mount -o noatime,lowerdir=/,upperdir=/data/overlay/upper,workdir=/data/overlay/work -t overlay "overlayfs:/data" /mnt
 ::sysinit:/bin/mount -o noatime,move /proc /mnt/proc
 ::sysinit:/sbin/pivot_root /mnt /mnt/data/ro
