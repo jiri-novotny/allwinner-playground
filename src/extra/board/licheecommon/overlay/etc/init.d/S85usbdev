@@ -6,44 +6,46 @@
 # general parameters
 VID=0x1781
 PID=0x0d00
-USB_NAME=usb0
-CONFIG_PATH=/sys/kernel/config
+CONFIG_PATH=/sys/kernel/config/usb_gadget
+G=lichee
+D="${CONFIG_PATH}/${G}"
+
 
 start() {
   echo "Configuring USB device..."
 
-  mkdir ${CONFIG_PATH}/usb_gadget/lichee
-  echo ${VID} > ${CONFIG_PATH}/usb_gadget/lichee/idVendor
-  echo ${PID} > ${CONFIG_PATH}/usb_gadget/lichee/idProduct
-  mkdir ${CONFIG_PATH}/usb_gadget/lichee/strings/0x409
-  echo "k4chn1k" > ${CONFIG_PATH}/usb_gadget/lichee/strings/0x409/manufacturer
-  cat /etc/product > ${CONFIG_PATH}/usb_gadget/lichee/strings/0x409/product
+  mkdir -p ${D}
+  echo ${VID} > ${D}/idVendor
+  echo ${PID} > ${D}/idProduct
+  mkdir ${D}/strings/0x409
+  echo "k4chn1k" > ${D}/strings/0x409/manufacturer
+  cat /etc/product > ${D}/strings/0x409/product
 
   # new configuration
-  mkdir ${CONFIG_PATH}/usb_gadget/lichee/configs/c.1
-  mkdir ${CONFIG_PATH}/usb_gadget/lichee/configs/c.1/strings/0x409
-  echo "config" > ${CONFIG_PATH}/usb_gadget/lichee/configs/c.1/strings/0x409/configuration
-  echo 50 > ${CONFIG_PATH}/usb_gadget/lichee/configs/c.1/MaxPower
+  mkdir ${D}/configs/c.1
+  mkdir ${D}/configs/c.1/strings/0x409
+  echo "config" > ${D}/configs/c.1/strings/0x409/configuration
+  echo 500 > ${D}/configs/c.1/MaxPower
 
   # HID function
-  mkdir ${CONFIG_PATH}/usb_gadget/lichee/functions/hid.${USB_NAME}
-  echo 0 > ${CONFIG_PATH}/usb_gadget/lichee/functions/hid.${USB_NAME}/protocol
-  echo 0 > ${CONFIG_PATH}/usb_gadget/lichee/functions/hid.${USB_NAME}/subclass
-  echo 32 > ${CONFIG_PATH}/usb_gadget/lichee/functions/hid.${USB_NAME}/report_length
-  echo -ne \\x06\\x00\\xff\\x09\\x01\\xa1\\x01\\x15\\x00\\x25\\xff\\x75\\x08\\x95\\x20\\x09\\x01\\x81\\x02\\x95\\x20\\x09\\x01\\x91\\x02\\xc0 > ${CONFIG_PATH}/usb_gadget/lichee/functions/hid.${USB_NAME}/report_desc
+  mkdir -p ${D}/functions/hid.0
+  echo 0 > ${D}/functions/hid.0/protocol
+  echo 0 > ${D}/functions/hid.0/subclass
+  echo 64 > ${D}/functions/hid.0/report_length
+  echo -ne \\x06\\x00\\xFF\\x09\\x01\\xA1\\x01\\x19\\x01\\x29\\x40\\x15\\x00\\x26\\xFF\\x00\\x75\\x08\\x95\\x40\\x81\\x02\\x19\\x01\\x29\\x40\\x91\\x02\\xC0 > ${D}/functions/hid.0/report_desc
 
   # Net function
-  mkdir ${CONFIG_PATH}/usb_gadget/lichee/functions/rndis.${USB_NAME}
+#  mkdir ${D}/functions/rndis.0
 
   # MSC function
-#  mkdir ${CONFIG_PATH}/usb_gadget/lichee/functions/mass_storage.${USB_NAME}
+#  mkdir ${D}/functions/mass_storage.0
 
   # add function to descriptor
-  ln -s ${CONFIG_PATH}/usb_gadget/lichee/functions/rndis.${USB_NAME} ${CONFIG_PATH}/usb_gadget/lichee/configs/c.1
-  ln -s ${CONFIG_PATH}/usb_gadget/lichee/functions/hid.${USB_NAME} ${CONFIG_PATH}/usb_gadget/lichee/configs/c.1
+#  ln -s ${D}/functions/rndis.0 ${D}/configs/c.1
+  ln -s ${D}/functions/hid.0 ${D}/configs/c.1
 
   echo "Starting USB device..."
-  cat /etc/usbdevice > ${CONFIG_PATH}/usb_gadget/lichee/UDC
+  cat /etc/usbdevice > ${D}/UDC
 }
 
 restart() {
@@ -56,11 +58,8 @@ case "$1" in
     start
   ;;
   stop)
-    echo "Stopping HID command receiver..."
-    killall hidcomd
     echo "Stopping USB gadget..."
-    echo "" > ${CONFIG_PATH}/usb_gadget/lichee/UDC
-    rm -rf ${CONFIG_PATH}/usb_gadget/lichee > /dev/null 2>&1
+    echo "" > ${D}/UDC
   ;;
   restart|reload)
     restart
