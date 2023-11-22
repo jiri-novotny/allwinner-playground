@@ -9,10 +9,10 @@ BUILDROOT_USE_GIT=0
 # you can set buildroot git version (branch or tag)
 BUILDROOT_BRANCH=master
 # you can set buildroot static version
-BUILDROOT_RELEASE=buildroot-2022.11.1
+BUILDROOT_RELEASE=buildroot-2023.08.3
 
 # you current project name
-PROJECT?=licheezero
+PROJECT?=h2zero
 DEFCONFIG?=$(PROJECT)_defconfig
 DEPLOY_UBOOT_MBR?=0
 
@@ -22,7 +22,7 @@ MOUNT_PATH=/mnt
 # you probably dont want to change buildroot source url
 BUILDROOT_GIT=git://git.buildroot.net/buildroot
 BUILDROOT_URL=https://buildroot.org/downloads/$(BUILDROOT_RELEASE).tar.gz
-TOOLCHAIN_RELEASE=armv7-eabihf--musl--stable-2021.11-1
+TOOLCHAIN_RELEASE=armv7-eabihf--musl--stable-2022.08-1
 TOOLCHAIN_URL=https://toolchains.bootlin.com/downloads/releases/toolchains/armv7-eabihf/tarballs/$(TOOLCHAIN_RELEASE).tar.bz2
 TOOLCHAIN64_RELEASE=aarch64--musl--stable-2021.11-1
 TOOLCHAIN64_URL=https://toolchains.bootlin.com/downloads/releases/toolchains/aarch64/tarballs/$(TOOLCHAIN64_RELEASE).tar.bz2
@@ -45,7 +45,6 @@ prepare: toolchain
 		else \
 			git clone -b $(BUILDROOT_BRANCH) $(BUILDROOT_GIT) $(SRC_PATH)/buildroot; \
 		fi; \
-		patch -p1 < $(SRC_PATH)/patches/0001-update-rtty.patch; \
 	fi
 
 toolchain:

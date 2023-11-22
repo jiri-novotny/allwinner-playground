@@ -1,6 +1,6 @@
 source "$BR2_EXTERNAL_EXTRAS_PATH/package/dotnet-runtime/Config.in"
 source "$BR2_EXTERNAL_EXTRAS_PATH/package/libuwebsockets/Config.in"
-source "$BR2_EXTERNAL_EXTRAS_PATH/package/mdnsd/Config.in"
+source "$BR2_EXTERNAL_EXTRAS_PATH/package/mDNSResponder/Config.in"
 source "$BR2_EXTERNAL_EXTRAS_PATH/package/nrf24/Config.in"
 source "$BR2_EXTERNAL_EXTRAS_PATH/package/rf-s2lp/Config.in"
 source "$BR2_EXTERNAL_EXTRAS_PATH/package/rfm73/Config.in"
