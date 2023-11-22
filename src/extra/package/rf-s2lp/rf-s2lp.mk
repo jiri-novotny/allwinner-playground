@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-RF_S2LP_VERSION = 0.0.20
+RF_S2LP_VERSION = 0.0.21
 RF_S2LP_SOURCE = rf-s2lp-$(RF_S2LP_VERSION).tar
 RF_S2LP_SITE_METHOD = file
 RF_S2LP_SITE = ${BR2_EXTERNAL_EXTRAS_PATH}/package/rf-s2lp
