@@ -1,8 +1,8 @@
-config BR2_PACKAGE_MDNSD
-	bool "mdnsd"
+config BR2_PACKAGE_MDNSRESPONDER
+	bool "mDNSResponder"
 	depends on BR2_TOOLCHAIN_HAS_THREADS
 	help
-	  mDNS responder - server for device discovery
+	  Apple mDNS responder - server for device discovery
 
-comment "mdnsd needs a toolchain w/ threads"
+comment "mDNSResponder needs a toolchain w/ threads"
 	depends on !BR2_TOOLCHAIN_HAS_THREADS
