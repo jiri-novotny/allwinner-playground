@@ -1,46 +1,7 @@
 /*
  * Copyright (C) 2016 Icenowy Zheng <icenowy@aosc.xyz>
  *
- * Based on sun8i-h3-orangepi-one.dts, which is:
- *   Copyright (C) 2016 Hans de Goede <hdegoede@redhat.com>
- *
- * This file is dual-licensed: you can use it either under the terms
- * of the GPL or the X11 license, at your option. Note that this dual
- * licensing only applies to this file, and not this project as a
- * whole.
- *
- *  a) This file is free software; you can redistribute it and/or
- *     modify it under the terms of the GNU General Public License as
- *     published by the Free Software Foundation; either version 2 of the
- *     License, or (at your option) any later version.
- *
- *     This file is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
- *
- * Or, alternatively,
- *
- *  b) Permission is hereby granted, free of charge, to any person
- *     obtaining a copy of this software and associated documentation
- *     files (the "Software"), to deal in the Software without
- *     restriction, including without limitation the rights to use,
- *     copy, modify, merge, publish, distribute, sublicense, and/or
- *     sell copies of the Software, and to permit persons to whom the
- *     Software is furnished to do so, subject to the following
- *     conditions:
- *
- *     The above copyright notice and this permission notice shall be
- *     included in all copies or substantial portions of the Software.
- *
- *     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- *     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
- *     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- *     NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
- *     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- *     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- *     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- *     OTHER DEALINGS IN THE SOFTWARE.
+ * Based on sun8i-h2-plus-orangepi-zero.dts
  */
 
 /dts-v1/;
@@ -221,15 +182,11 @@
 
 		partition@0 {
 			label = "u-boot";
-			reg = <0x0 0x70000>;
+			reg = <0x0 0x80000>;
 			read-only;
 		};
-		partition@70000 {
-			label = "u-boot-env1";
-			reg = <0x70000 0x10000>;
-		};
 		partition@80000 {
-			label = "u-boot-env2";
+			label = "u-boot-env";
 			reg = <0x80000 0x10000>;
 		};
 		partition@90000 {
@@ -238,11 +195,11 @@
 		};
 		partition@a0000 {
 			label = "kernel";
-			reg = <0xa0000 0x600000>;
+			reg = <0xa0000 0x500000>;
 		};
-		partition@4c0000 {
+		partition@4a0000 {
 			label = "rootfs";
-			reg = <0x4c0000 0xB60000>;
+			reg = <0x5a0000 0xA60000>;
 		};
 	};
 };

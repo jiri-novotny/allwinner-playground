@@ -1,6 +1,6 @@
 #!/bin/sh
 
-USE_WIFI=0
+USE_WIFI=1
 
 start() {
   echo "Starting apps..."
@@ -24,7 +24,7 @@ start() {
   # set time
   if [ `ip a | grep inet | wc -l` -gt 1 ]; then
     echo "Configuring date..."
-    ntpd -q -p ntp.cesnet.cz
+    ntpd -p ntp.cesnet.cz
   else
     echo "No IP, skipping date config..."
   fi
